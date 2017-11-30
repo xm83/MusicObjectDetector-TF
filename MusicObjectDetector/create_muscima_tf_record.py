@@ -39,7 +39,7 @@ from object_detection.utils import label_map_util
 
 flags = tf.app.flags
 flags.DEFINE_string('data_dir', '', 'Root directory to raw PASCAL VOC dataset.')
-flags.DEFINE_string('set', 'train', 'Convert training set, validation set or '
+flags.DEFINE_string('set', 'training', 'Convert training set, validation set or '
                     'merged set.')
 flags.DEFINE_string('annotations_dir', 'Annotations',
                     '(Relative) path to annotations directory.')
@@ -50,7 +50,7 @@ flags.DEFINE_boolean('ignore_difficult_instances', False, 'Whether to ignore '
                      'difficult instances')
 FLAGS = flags.FLAGS
 
-SETS = ['train', 'validation', 'test']
+SETS = ['training', 'validation', 'test']
 
 
 def dict_to_tf_example(data,
@@ -151,8 +151,7 @@ def main(_):
 
   label_map_dict = label_map_util.get_label_map_dict(FLAGS.label_map_path)
 
-  examples_path = os.path.join(data_dir, 'ImageSets',
-                               FLAGS.set + '.txt')
+  examples_path = os.path.join(data_dir, FLAGS.set + '.txt')
   annotations_dir = os.path.join(data_dir, FLAGS.annotations_dir)
   examples_list = dataset_util.read_examples_list(examples_path)
   for idx, example in enumerate(examples_list):
