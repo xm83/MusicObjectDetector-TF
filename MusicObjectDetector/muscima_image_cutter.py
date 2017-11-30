@@ -136,9 +136,14 @@ def compute_objects_appearing_in_cropped_image(file_name: str,
             music_object.bounding_box)
         if intersection_over_area > 0.8:
             top, left, bottom, right = music_object.bounding_box
+            img_top, img_left, img_bottom, img_right = image_crop_bounding_box_top_left_bottom_right
+            img_width = img_right - img_left - 1
+            img_height = img_bottom - img_top - 1
             translated_bounding_box = (
-                min(0, top - y_translation_for_cropped_image), min(0, left - x_translation_for_cropped_image),
-                max(bottom - top, bottom - y_translation_for_cropped_image), max(right - left, right - x_translation_for_cropped_image))
+                max(0, top - y_translation_for_cropped_image),
+                max(0, left - x_translation_for_cropped_image),
+                min(img_height, bottom - y_translation_for_cropped_image),
+                min(img_width, right - x_translation_for_cropped_image))
             objects_appearing_in_cropped_image.append((file_name, music_object.clsname, translated_bounding_box))
 
     return objects_appearing_in_cropped_image
