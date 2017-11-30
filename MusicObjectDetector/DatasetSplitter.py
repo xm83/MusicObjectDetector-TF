@@ -73,8 +73,11 @@ class DatasetSplitter:
         destination_path = os.path.join(self.destination_directory, name_of_split)
         os.makedirs(destination_path, exist_ok=True)
         print("Copying {0} {1} files...".format(len(files), name_of_split))
-        for image in files:
-            shutil.copy(os.path.join(path_to_images_of_class, image), destination_path)
+
+        with open(os.path.join(self.destination_directory, name_of_split + ".txt"), "w") as image_set_dump:
+            for image in files:
+                image_set_dump.write(os.path.splitext(image)[0] + "\n")
+                shutil.copy(os.path.join(path_to_images_of_class, image), destination_path)
 
 
 if __name__ == "__main__":
@@ -82,12 +85,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--source_directory",
         type=str,
-        default="../data/muscima_pp_cropped_images",
+        default="data/muscima_pp_cropped_images",
         help="The directory, where the images should be copied from")
     parser.add_argument(
         "--destination_directory",
         type=str,
-        default="../data",
+        default="data",
         help="The directory, where the images should be split into the three directories 'train', 'test' and 'validation'")
 
     flags, unparsed = parser.parse_known_args()
