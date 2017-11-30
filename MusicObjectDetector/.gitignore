@@ -1,3 +1,5 @@
 *.zip
 .idea
 data
+*.record
+Protoc
