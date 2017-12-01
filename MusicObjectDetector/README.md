@@ -28,6 +28,10 @@ Build the required libraries:
 ```commandline
 cd research
 protoc object_detection/protos/*.proto --python_out=.
+cd slim
+python setup.py install
+cd ..
+python setup.py install
 ```
 
 ### Windows
@@ -67,6 +71,19 @@ protoc object_detection\protos\ssd_anchor_generator.proto           --python_out
 protoc object_detection\protos\string_int_label_map.proto           --python_out=.
 protoc object_detection\protos\train.proto                          --python_out=.
 ```
+
+Install the python packages
+```commandline
+cd slim
+python setup.py install
+cd ..
+python setup.py install
+```
+
+> If you get the exception `error: could not create 'build': Cannot create a file when that file already exists` here, delete the `BUILD` file inside first
+
+Now add the [source to the python path](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md#add-libraries-to-pythonpath) or just copy the `object_detection` folder and the `slim` folder into your `[Anaconda3]/Lib/site-packages` directory. 
+
 
 # Dataset
 If you are just interested in the dataset, the split and the annotations used in this project, you can run the following scripts to reproduce the dataset locally:
