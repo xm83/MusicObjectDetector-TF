@@ -777,7 +777,7 @@ def to_absolute_coordinates(boxlist,
                             height,
                             width,
                             check_range=True,
-                            maximum_normalized_coordinate=1.01,
+                            maximum_normalized_coordinate=1.2,
                             scope=None):
   """Converts normalized box coordinates to absolute pixel coordinates.
 
