@@ -1,6 +1,15 @@
 
 # Training on MUSCIMA++ dataset
 
+## Environment installation
+
+My preferred method is to use anaconda.
+I've produced a anaconda_env.txt from which you can recreate a working env with:
+
+```
+conda create --name myenv --file spec-file.txt
+```
+
 ## Dataset generation
 
 * Download MUSCIMA++ dataset and MUSCIMA images
