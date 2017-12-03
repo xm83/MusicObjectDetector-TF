@@ -79,6 +79,15 @@ FLAGS = flags.FLAGS
 
 
 def main(unused_argv):
+    # Uncomment the next lines on Linux to run the evaluation on the CPU
+    # config = tf.ConfigProto(
+    #         device_count={'GPU': 0}
+    # )
+    # sess = tf.Session(config=config)
+
+    # Uncomment the next line on Windows to run the evaluation on the CPU
+    # os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
     assert FLAGS.checkpoint_dir, '`checkpoint_dir` is missing.'
     assert FLAGS.eval_dir, '`eval_dir` is missing.'
     tf.gfile.MakeDirs(FLAGS.eval_dir)
