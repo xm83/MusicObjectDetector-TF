@@ -89,6 +89,7 @@ Now add the [source to the python path](https://github.com/tensorflow/models/blo
 If you are just interested in the dataset, the split and the annotations used in this project, you can run the following scripts to reproduce the dataset locally:
 
     cd MusicObjectDetector
+    python generate_mapping.py data/muscima_pp_raw/v0.9.1/data/cropobjects mapping.txt
     python muscima_image_cutter.py
     python DatasetSplitter.py
     
