@@ -13,7 +13,7 @@ $pswindow.buffersize = $newsize
 
 cd C:/Users/alpa/Repositories/MusicObjectDetector-TF/research
 
-Start-Transcript -path "$($pathToTranscript)Transcript-ssd_mobilenet_v1_muscima configuration_pretrained.txt" -append
-echo "Train with ssd_mobilenet_v1_muscima configuration_pretrained"
-python object_detection/train.py --logtostderr --pipeline_config_path=C:\Users\alpa\Repositories\MusicObjectDetector-TF\MusicObjectDetector\configurations\ssd_mobilenet_v1_muscima configuration_pretrained.config --train_dir=C:\Users\alpa\Repositories\MusicObjectDetector-TF\MusicObjectDetector\data\training-checkpoints-ssd_mobilenet_v1_muscima configuration_pretrained
+Start-Transcript -path "$($pathToTranscript)Transcript-ssd_mobilenet_v1_muscima_150x300_pretrained.txt" -append
+echo "Train with ssd_mobilenet_v1_muscima_150x300_pretrained"
+python object_detection/train.py --logtostderr --pipeline_config_path=C:\Users\alpa\Repositories\MusicObjectDetector-TF\MusicObjectDetector\configurations\ssd_mobilenet_v1_muscima_150x300_pretrained.config --train_dir=C:\Users\alpa\Repositories\MusicObjectDetector-TF\MusicObjectDetector\data\training-checkpoints-ssd_mobilenet_v1_muscima_150x300_pretrained
 Stop-Transcript
