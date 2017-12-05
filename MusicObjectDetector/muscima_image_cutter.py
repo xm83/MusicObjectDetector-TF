@@ -116,6 +116,7 @@ def intersection(ai, bi):
         return 0
     return w * h
 
+
 def area(a):
     top, left, bottom, right = a
     return (bottom - top) * (right - left)
@@ -176,8 +177,7 @@ def delete_unused_images(muscima_image_directory: str):
     all_image_paths = [y for x in os.walk(muscima_image_directory) for y in glob(os.path.join(x[0], '*.png'))]
 
     for image_path in tqdm(all_image_paths, desc="Deleting unused images"):
-        if not ('ideal' in image_path and \
-                ('image' in image_path or 'symbol' in image_path)):
+        if not ('ideal' in image_path and ('image' in image_path or 'symbol' in image_path)):
             os.remove(image_path)
 
 
