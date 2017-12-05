@@ -1,26 +1,11 @@
-$pathToGitRoot = "C:/Users/alpa/Repositories/MusicObjectDetector-TF/"
-$pathToSourceRoot = "C:/Users/alpa/Repositories/MusicObjectDetector-TF/MusicObjectDetector/"
-$pathToTranscript = "$($pathToSourceRoot)"
+$pathToGitRoot = "C:/Users/Alex/Repositories/MusicObjectDetector-TF"
+$pathToSourceRoot = "$($pathToGitRoot)/MusicObjectDetector"
+$pathToTranscript = "$($pathToSourceRoot)/Transcripts"
+$configuration = "ssd_mobilenet_v1_muscima_150x300"
 
-# Allowing wider outputs https://stackoverflow.com/questions/7158142/prevent-powergui-from-truncating-the-output
-$pshost = get-host
-$pswindow = $pshost.ui.rawui
-$newsize = $pswindow.buffersize
-$newsize.height = 9999
-$newsize.width = 1500
-$pswindow.buffersize = $newsize
+cd $pathToGitRoot/research
 
-
-cd $pathToSourceRoot
-echo "Appending research folder $($pathToGitRoot)research to temporary PYTHONPATH"
-$env:PYTHONPATH = $env:PYTHONPATH;"$($pathToSourceRoot)research"
-
-$pathToPipelineConfig = "$($pathToSourceRoot)faster_rcnn_resnet50_muscima_windows.config"
-$trainingDirectory = $pathToSourceRoot
-cd ../research
-#python object_detection/train.py --logtostderr --pipeline_config_path=$pathToPipelineConfig --train_dir=$trainingDirectory
-
-Start-Transcript -path "$($pathToTranscript)EvaluateTranscript.txt" -append
-echo "Validate with ssd_mobilenet_v1_muscima configuration_150x300"
-python object_detection/eval.py --logtostderr --pipeline_config_path=C:\Users\alpa\Repositories\MusicObjectDetector-TF\MusicObjectDetector\configurations\ssd_mobilenet_v1_muscima_150x300.config --checkpoint_dir=C:\Users\alpa\Repositories\MusicObjectDetector-TF\MusicObjectDetector\data\training-checkpoints-ssd_mobilenet_v1_muscima_150x300 --eval_dir=C:\Users\alpa\Repositories\MusicObjectDetector-TF\MusicObjectDetector\data\validation-checkpoints-ssd_mobilenet_v1_muscima_150x300
+Start-Transcript -path "$($pathToTranscript)/EvaluateModel-$($configuration).txt" -append
+echo "Validate with $($configuration) configuration"
+python object_detection/eval.py --logtostderr --pipeline_config_path="$($pathToSourceRoot)/configurations/$($configuration).config" --checkpoint_dir="$($pathToSourceRoot)/data/training-checkpoints-$($configuration)" --eval_dir="$($pathToSourceRoot)/data/validation-checkpoints-$($configuration)"
 Stop-Transcript

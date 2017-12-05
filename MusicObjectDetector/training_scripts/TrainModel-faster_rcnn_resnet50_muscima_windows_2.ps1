@@ -1,21 +1,11 @@
-$pathToGitRoot = "C:/Users/Alex/Repositories/MusicObjectDetector-TF/"
-$pathToSourceRoot = "C:/Users/Alex/Repositories/MusicObjectDetector-TF/MusicObjectDetector/"
-$pathToTranscript = "$($pathToSourceRoot)"
+$pathToGitRoot = "C:/Users/Alex/Repositories/MusicObjectDetector-TF"
+$pathToSourceRoot = "$($pathToGitRoot)/MusicObjectDetector"
+$pathToTranscript = "$($pathToSourceRoot)/Transcripts"
+$configuration = "faster_rcnn_resnet50_muscima_windows_2"
 
-# Allowing wider outputs https://stackoverflow.com/questions/7158142/prevent-powergui-from-truncating-the-output
-$pshost = get-host
-$pswindow = $pshost.ui.rawui
-$newsize = $pswindow.buffersize
-$newsize.height = 9999
-$newsize.width = 1500
-$pswindow.buffersize = $newsize
+cd $pathToGitRoot/research
 
-
-cd $pathToSourceRoot/../research
-
-Start-Transcript -path "$($pathToTranscript)Transcript.txt" -append
-
-echo "Train with faster_rcnn_resnet50_muscima_windows_2 configuration"
-python object_detection/train.py --logtostderr --pipeline_config_path=C:\Users\Alex\Repositories\MusicObjectDetector-TF\MusicObjectDetector\configurations\faster_rcnn_resnet50_muscima_windows_2.config --train_dir=C:\Users\Alex\Repositories\MusicObjectDetector-TF\MusicObjectDetector\data\training-checkpoints-faster_rcnn_resnet50_muscima_windows_2
-
+Start-Transcript -path "$($pathToTranscript)/TrainModel-$($configuration).txt" -append
+echo "Training with $($configuration) configuration"
+python object_detection/train.py --logtostderr --pipeline_config_path="$($pathToSourceRoot)/configurations/$($configuration).config" --train_dir="$($pathToSourceRoot)/data/training-checkpoints-$($configuration)"
 Stop-Transcript
