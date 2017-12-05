@@ -16,9 +16,10 @@ from tqdm import tqdm
 from muscima_annotation_generator import create_annotations_in_plain_format, create_annotations_in_pascal_voc_format
 
 
-def cut_images(muscima_image_directory: str, staff_vertical_positions_file: str, output_path: str,
-               muscima_pp_raw_data_directory: str, exported_annotations_file_path: str, annotations_path: str):
-    image_paths = [y for x in os.walk(muscima_image_directory) for y in glob(os.path.join(x[0], '*.png'))]
+def cut_images(muscima_image_directory: str, staff_vertical_positions_file: str,
+               output_path: str, muscima_pp_raw_data_directory: str,
+               exported_annotations_file_path: str, annotations_path: str):
+    image_paths = glob(muscima_image_directory)
     os.makedirs(output_path, exist_ok=True)
 
     image_generator = MuscimaPlusPlusImageGenerator()
@@ -175,7 +176,8 @@ def delete_unused_images(muscima_image_directory: str):
     all_image_paths = [y for x in os.walk(muscima_image_directory) for y in glob(os.path.join(x[0], '*.png'))]
 
     for image_path in tqdm(all_image_paths, desc="Deleting unused images"):
-        if not ('ideal' in image_path and 'image' in image_path):
+        if not ('ideal' in image_path and \
+                ('image' in image_path or 'symbol' in image_path)):
             os.remove(image_path)
 
 
@@ -202,5 +204,11 @@ if __name__ == "__main__":
     #
     shutil.copy("Staff-Vertical-Positions.txt", dataset_directory)
 
-    cut_images("data/cvcmuscima_staff_removal", "data/Staff-Vertical-Positions.txt",
-               "data/muscima_pp_cropped_images", "data/muscima_pp_raw", "data/Annotations.txt", "data/Annotations")
+    cut_images("data/cvcmuscima_staff_removal/*/ideal/*/image/*.png",
+               "data/Staff-Vertical-Positions.txt",
+               "data/muscima_pp_cropped_images_with_stafflines",
+               "data/muscima_pp_raw", "data/Annotations.txt", "data/Annotations")
+    cut_images("data/cvcmuscima_staff_removal/*/ideal/*/symbol/*.png",
+               "data/Staff-Vertical-Positions.txt",
+               "data/muscima_pp_cropped_images_without_stafflines",
+               "data/muscima_pp_raw", "data/Annotations.txt", "data/Annotations")
