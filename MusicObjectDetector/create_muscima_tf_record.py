@@ -55,6 +55,7 @@ SETS = ['training', 'validation', 'test']
 
 def dict_to_tf_example(data,
                        dataset_directory,
+                       set_name,
                        label_map_dict,
                        ignore_difficult_instances=False):
     """Convert XML derived dict to tf.Example proto.
@@ -66,6 +67,7 @@ def dict_to_tf_example(data,
       data: dict holding PASCAL XML fields for a single image (obtained by
         running dataset_util.recursive_parse_xml_to_dict)
       dataset_directory: Path to root directory holding PASCAL dataset
+      set_name: name of the set training, validation or test
       label_map_dict: A map from string label names to integers ids.
       ignore_difficult_instances: Whether to skip difficult instances in the
         dataset  (default: False).
@@ -78,7 +80,7 @@ def dict_to_tf_example(data,
     Raises:
       ValueError: if the image pointed to by data['filename'] is not a valid JPEG
     """
-    img_path = os.path.join(data['folder'], data['filename'])
+    img_path = os.path.join(set_name, data['filename'])
     full_path = os.path.join(dataset_directory, img_path)
     with tf.gfile.GFile(full_path, 'rb') as fid:
         encoded_jpg = fid.read()
@@ -153,7 +155,7 @@ def main(_):
     label_map_dict = label_map_util.get_label_map_dict(FLAGS.label_map_path)
 
     examples_path = os.path.join(data_dir, FLAGS.set + '.txt')
-    annotations_dir = os.path.join(data_dir, FLAGS.annotations_dir)
+    annotations_dir = os.path.join(os.path.split(data_dir)[0], FLAGS.annotations_dir)
     examples_list = dataset_util.read_examples_list(examples_path)
     for idx, example in tqdm(enumerate(examples_list),
                              desc="Parsing annotations from {0} set into TF-Example".format(FLAGS.set),
@@ -164,7 +166,7 @@ def main(_):
         xml = etree.fromstring(xml_str)
         data = dataset_util.recursive_parse_xml_to_dict(xml)['annotation']
 
-        tf_example = dict_to_tf_example(data, FLAGS.data_dir, label_map_dict,
+        tf_example = dict_to_tf_example(data, FLAGS.data_dir, FLAGS.set, label_map_dict,
                                         FLAGS.ignore_difficult_instances)
         writer.write(tf_example.SerializeToString())
 

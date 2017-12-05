@@ -88,10 +88,21 @@ Now add the [source to the python path](https://github.com/tensorflow/models/blo
 # Dataset
 If you are just interested in the dataset, the split and the annotations used in this project, you can run the following scripts to reproduce the dataset locally:
 
-    cd MusicObjectDetector
-    python generate_mapping.py data/muscima_pp_raw/v0.9.1/data/cropobjects mapping.txt
-    python muscima_image_cutter.py
-    python DatasetSplitter.py
+```
+# cd into MusicObjectDetector folder
+python generate_mapping.py data/muscima_pp_raw/v0.9.1/data/cropobjects mapping_reduced_class2.txt
+python muscima_image_cutter.py
+python DatasetSplitter.py --source_directory=data/muscima_pp_cropped_images_with_stafflines --destination_directory=data/training_validation_test_with_stafflines
+python DatasetSplitter.py --source_directory=data/muscima_pp_cropped_images_without_stafflines --destination_directory=data/training_validation_test_without_stafflines
+
+(cd ../research; python ../MusicObjectDetector/create_muscima_tf_record.py --data_dir=../MusicObjectDetector/data/training_validation_test_with_stafflines --set=training --annotations_dir=Annotations --output_path=../MusicObjectDetector/data/training_validation_test_with_stafflines/training.record --label_map_path=../MusicObjectDetector/mapping_reduced_class2.txt)
+(cd ../research; python ../MusicObjectDetector/create_muscima_tf_record.py --data_dir=../MusicObjectDetector/data/training_validation_test_with_stafflines --set=validation --annotations_dir=Annotations --output_path=../MusicObjectDetector/data/training_validation_test_with_stafflines/validation.record --label_map_path=../MusicObjectDetector/mapping_reduced_class2.txt)
+(cd ../research; python ../MusicObjectDetector/create_muscima_tf_record.py --data_dir=../MusicObjectDetector/data/training_validation_test_with_stafflines --set=test --annotations_dir=Annotations --output_path=../MusicObjectDetector/data/training_validation_test_with_stafflines/test.record --label_map_path=../MusicObjectDetector/mapping_reduced_class2.txt)
+
+(cd ../research; python ../MusicObjectDetector/create_muscima_tf_record.py --data_dir=../MusicObjectDetector/data/training_validation_test_without_stafflines --set=training --annotations_dir=Annotations --output_path=../MusicObjectDetector/data/training_validation_test_without_stafflines/training.record --label_map_path=../MusicObjectDetector/mapping_reduced_class2.txt)
+(cd ../research; python ../MusicObjectDetector/create_muscima_tf_record.py --data_dir=../MusicObjectDetector/data/training_validation_test_without_stafflines --set=validation --annotations_dir=Annotations --output_path=../MusicObjectDetector/data/training_validation_test_without_stafflines/validation.record --label_map_path=../MusicObjectDetector/mapping_reduced_class2.txt)
+(cd ../research; python ../MusicObjectDetector/create_muscima_tf_record.py --data_dir=../MusicObjectDetector/data/training_validation_test_without_stafflines --set=test --annotations_dir=Annotations --output_path=../MusicObjectDetector/data/training_validation_test_without_stafflines/test.record --label_map_path=../MusicObjectDetector/mapping_reduced_class2.txt)
+```
     
 These two scripts will download the datasets automatically, generate cropped images along an Annotation.txt file and split the images into three reproducible parts for training, validation and test. 
 
