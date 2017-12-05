@@ -36,290 +36,320 @@ item{
 
 item{
   id: 8
-  name: 'duration-dot'
+  name: 'double_sharp'
 }
 
 item{
   id: 9
-  name: 'dynamics_text'
+  name: 'duration-dot'
 }
 
 item{
   id: 10
-  name: 'f-clef'
+  name: 'dynamics_text'
 }
 
 item{
   id: 11
-  name: 'flat'
+  name: 'f-clef'
 }
 
 item{
   id: 12
-  name: 'g-clef'
+  name: 'flat'
 }
 
 item{
   id: 13
-  name: 'grace-notehead-full'
+  name: 'g-clef'
 }
 
 item{
   id: 14
-  name: 'grace_strikethrough'
+  name: 'grace-notehead-full'
 }
 
 item{
   id: 15
-  name: 'hairpin-cresc.'
+  name: 'grace_strikethrough'
 }
 
 item{
   id: 16
-  name: 'hairpin-decr.'
+  name: 'hairpin-cresc.'
 }
 
 item{
   id: 17
-  name: 'half_rest'
+  name: 'hairpin-decr.'
 }
 
 item{
   id: 18
-  name: 'key_signature'
+  name: 'half_rest'
 }
 
 item{
   id: 19
-  name: 'ledger_line'
+  name: 'key_signature'
 }
 
 item{
   id: 20
-  name: 'letter_M'
+  name: 'ledger_line'
 }
 
 item{
   id: 21
-  name: 'letter_P'
+  name: 'letter_M'
 }
 
 item{
   id: 22
-  name: 'letter_a'
+  name: 'letter_P'
 }
 
 item{
   id: 23
-  name: 'letter_c'
+  name: 'letter_a'
 }
 
 item{
   id: 24
-  name: 'letter_d'
+  name: 'letter_c'
 }
 
 item{
   id: 25
-  name: 'letter_e'
+  name: 'letter_d'
 }
 
 item{
   id: 26
-  name: 'letter_f'
+  name: 'letter_e'
 }
 
 item{
   id: 27
-  name: 'letter_i'
+  name: 'letter_f'
 }
 
 item{
   id: 28
-  name: 'letter_l'
+  name: 'letter_i'
 }
 
 item{
   id: 29
-  name: 'letter_m'
+  name: 'letter_l'
 }
 
 item{
   id: 30
-  name: 'letter_n'
+  name: 'letter_m'
 }
 
 item{
   id: 31
-  name: 'letter_o'
+  name: 'letter_n'
 }
 
 item{
   id: 32
-  name: 'letter_p'
+  name: 'letter_o'
 }
 
 item{
   id: 33
-  name: 'letter_r'
+  name: 'letter_p'
 }
 
 item{
   id: 34
-  name: 'letter_s'
+  name: 'letter_r'
 }
 
 item{
   id: 35
-  name: 'letter_t'
+  name: 'letter_s'
 }
 
 item{
   id: 36
-  name: 'letter_u'
+  name: 'letter_t'
 }
 
 item{
   id: 37
-  name: 'measure_separator'
+  name: 'letter_u'
 }
 
 item{
   id: 38
-  name: 'multi-staff_brace'
+  name: 'measure_separator'
 }
 
 item{
   id: 39
-  name: 'multi-staff_bracket'
+  name: 'multi-staff_brace'
 }
 
 item{
   id: 40
-  name: 'multiple-note_tremolo'
+  name: 'multi-staff_bracket'
 }
 
 item{
   id: 41
-  name: 'natural'
+  name: 'multiple-note_tremolo'
 }
 
 item{
   id: 42
-  name: 'notehead-empty'
+  name: 'natural'
 }
 
 item{
   id: 43
-  name: 'notehead-full'
+  name: 'notehead-empty'
 }
 
 item{
   id: 44
-  name: 'numeral_3'
+  name: 'notehead-full'
 }
 
 item{
   id: 45
-  name: 'numeral_4'
+  name: 'numeral_2'
 }
 
 item{
   id: 46
-  name: 'ornament(s)'
+  name: 'numeral_3'
 }
 
 item{
   id: 47
-  name: 'other-dot'
+  name: 'numeral_4'
 }
 
 item{
   id: 48
-  name: 'other_text'
+  name: 'numeral_5'
 }
 
 item{
   id: 49
-  name: 'quarter_rest'
+  name: 'numeral_6'
 }
 
 item{
   id: 50
-  name: 'repeat'
+  name: 'numeral_7'
 }
 
 item{
   id: 51
-  name: 'repeat-dot'
+  name: 'numeral_8'
 }
 
 item{
   id: 52
-  name: 'sharp'
+  name: 'ornament(s)'
 }
 
 item{
   id: 53
-  name: 'slur'
+  name: 'other-dot'
 }
 
 item{
   id: 54
-  name: 'staccato-dot'
+  name: 'other_text'
 }
 
 item{
   id: 55
-  name: 'staff_grouping'
+  name: 'quarter_rest'
 }
 
 item{
   id: 56
-  name: 'stem'
+  name: 'repeat'
 }
 
 item{
   id: 57
-  name: 'tempo_text'
+  name: 'repeat-dot'
 }
 
 item{
   id: 58
-  name: 'tenuto'
+  name: 'sharp'
 }
 
 item{
   id: 59
-  name: 'thin_barline'
+  name: 'slur'
 }
 
 item{
   id: 60
-  name: 'tie'
+  name: 'staccato-dot'
 }
 
 item{
   id: 61
-  name: 'time_signature'
+  name: 'staff_grouping'
 }
 
 item{
   id: 62
-  name: 'trill'
+  name: 'stem'
 }
 
 item{
   id: 63
-  name: 'tuple'
+  name: 'tempo_text'
 }
 
 item{
   id: 64
-  name: 'tuple_bracket/line'
+  name: 'tenuto'
 }
 
 item{
   id: 65
+  name: 'thin_barline'
+}
+
+item{
+  id: 66
+  name: 'tie'
+}
+
+item{
+  id: 67
+  name: 'time_signature'
+}
+
+item{
+  id: 68
+  name: 'trill'
+}
+
+item{
+  id: 69
+  name: 'tuple'
+}
+
+item{
+  id: 70
+  name: 'tuple_bracket/line'
+}
+
+item{
+  id: 71
   name: 'whole_rest'
 }
