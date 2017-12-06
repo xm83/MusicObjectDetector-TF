@@ -150,6 +150,8 @@ def main(_):
 
     data_dir = FLAGS.data_dir
 
+    os.makedirs(os.path.dirname(FLAGS.output_path), exist_ok=True)
+
     writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
 
     label_map_dict = label_map_util.get_label_map_dict(FLAGS.label_map_path)
