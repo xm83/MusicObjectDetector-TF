@@ -5,3 +5,4 @@ data
 Protoc
 old_data
 Transcripts
+*.tar.gz
