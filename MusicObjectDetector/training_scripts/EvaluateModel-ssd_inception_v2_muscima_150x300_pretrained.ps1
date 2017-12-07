@@ -1,4 +1,4 @@
-$pathToGitRoot = "C:/Users/Alex/Repositories/MusicObjectDetector-TF"
+$pathToGitRoot = "C:/Users/alpa/Repositories/MusicObjectDetector-TF"
 $pathToSourceRoot = "$($pathToGitRoot)/MusicObjectDetector"
 $pathToTranscript = "$($pathToSourceRoot)/Transcripts"
 $configuration = "ssd_inception_v2_muscima_150x300_pretrained"
