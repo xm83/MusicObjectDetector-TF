@@ -1,6 +1,13 @@
 # Music Object Detector
 
-This is the new repository for the new home for the fast and reliable Music Symbol detector with Deep Learning.
+This is the repository for the fast and reliable Music Symbol detector with Deep Learning, based on the Tensorflow Object Detection API: 
+ 
+![Original image](images/crop_undetected.png) 
+
+![Image with detected objects](images/crop_partially_detected.png)
+
+The detailed results for various combinations of object-detector, feature-extractor, etc. can be found in [this spreadsheet](https://docs.google.com/spreadsheets/d/174-CnLO-rAoVMst0ngVGHguTlD39ebdxLX9ZLE9Pscw/edit?usp=sharing).
+
 
 # Running the application
 This repository contains several scripts that can be used independently of each other. 
@@ -105,6 +112,9 @@ python DatasetSplitter.py --source_directory=data/muscima_pp_cropped_images_with
 ```
     
 These two scripts will download the datasets automatically, generate cropped images along an Annotation.txt file and split the images into three reproducible parts for training, validation and test. 
+
+Images will be cropped first vertically along the staffs and then horizontally (red boxes) like this (with orange regions overlapping between two regions):
+![Cropping of images](images/w-05_p006_crop_regions.png) 
 
 # License
 
