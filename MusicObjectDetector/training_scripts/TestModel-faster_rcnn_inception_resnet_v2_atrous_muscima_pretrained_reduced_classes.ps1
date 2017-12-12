@@ -1,7 +1,7 @@
 $pathToGitRoot = "C:/Users/Alex/Repositories/MusicObjectDetector-TF"
 $pathToSourceRoot = "$($pathToGitRoot)/MusicObjectDetector"
 $pathToTranscript = "$($pathToSourceRoot)/Transcripts"
-$configuration = "faster_rcnn_inception_resnet_v2_atrous_muscima_pretrained_no_staff_lines"
+$configuration = "faster_rcnn_inception_resnet_v2_atrous_muscima_pretrained_reduced_classes"
 
 cd $pathToGitRoot/research
 
@@ -13,3 +13,6 @@ echo "Testing with $($configuration) configuration"
 # python object_detection/eval.py --logtostderr --pipeline_config_path="$($pathToSourceRoot)/configurations/$($configuration).config" --checkpoint_dir="$($pathToSourceRoot)/data/training-checkpoints-$($configuration)" --eval_dir="$($pathToSourceRoot)/data/test-checkpoints-$($configuration)"
 python object_detection/eval.py --logtostderr --pipeline_config_path="$($pathToSourceRoot)/configurations/$($configuration).config" --checkpoint_dir="$($pathToSourceRoot)/data/training-checkpoints-$($configuration)" --eval_dir="$($pathToSourceRoot)/data/test-weighted-checkpoints-$($configuration)"
 Stop-Transcript
+
+# Continue with 1 validation run
+# C:\Users\Alex\Repositories\MusicObjectDetector-TF\MusicObjectDetector\training_scripts\ValidateModel-faster_rcnn_inception_resnet_v2_atrous_muscima_pretrained_reduced_classes.ps1

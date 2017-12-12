@@ -1,7 +1,7 @@
 $pathToGitRoot = "C:/Users/Alex/Repositories/MusicObjectDetector-TF"
 $pathToSourceRoot = "$($pathToGitRoot)/MusicObjectDetector"
 $pathToTranscript = "$($pathToSourceRoot)/Transcripts"
-$configuration = "faster_rcnn_nas_muscima_pretrained"
+$configuration = "faster_rcnn_resnet50_muscima_pretrained2"
 
 cd $pathToGitRoot/research
 
