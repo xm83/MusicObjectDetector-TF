@@ -2,9 +2,11 @@
 
 This is the repository for the fast and reliable Music Symbol detector with Deep Learning, based on the Tensorflow Object Detection API: 
  
-![Original image](images/crop_undetected.png) 
-
-![Image with detected objects](images/crop_partially_detected.png)
+| Original Image | Detection over time|
+|:--------------:|:------------------:|
+| ![Original image](images/crop_undetected.png) | ![Image with detected objects](images/individualImage1-animation.gif) |
+| ![Original image](images/individualImage3-0.jpg)      | ![Image with detected objects](images/individualImage3-animated.gif)      |
+| ![Original image](images/individualImage2-0.jpg)      | ![Image with detected objects](images/individualImage2-animated.gif)      |
 
 The detailed results for various combinations of object-detector, feature-extractor, etc. can be found in [this spreadsheet](https://docs.google.com/spreadsheets/d/174-CnLO-rAoVMst0ngVGHguTlD39ebdxLX9ZLE9Pscw/edit?usp=sharing).
 
