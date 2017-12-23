@@ -1,21 +1,16 @@
 import os
 import re
-import shutil
 from glob import glob
 from typing import Tuple, List
 
-from PIL import Image, ImageDraw
+from PIL import Image
 from muscima.cropobject import CropObject
-from omrdatasettools.converters.ImageInverter import ImageInverter
-from omrdatasettools.downloaders.CvcMuscimaDatasetDownloader import CvcMuscimaDatasetDownloader, CvcMuscimaDataset
-from omrdatasettools.downloaders.MuscimaPlusPlusDatasetDownloader import MuscimaPlusPlusDatasetDownloader
 from omrdatasettools.image_generators.MuscimaPlusPlusImageGenerator import MuscimaPlusPlusImageGenerator
 from tqdm import tqdm
 
-from muscima_annotation_generator import create_annotations_in_plain_format, create_annotations_in_pascal_voc_format
 
-
-def collect_dimensions(muscima_image_directory: str, muscima_pp_raw_data_directory: str,
+def collect_dimensions(muscima_image_directory: str,
+                       muscima_pp_raw_data_directory: str,
                        exported_absolute_dimensions_file_path: str,
                        exported_relative_dimensions_file_path: str):
     image_paths = glob(muscima_image_directory)
@@ -67,7 +62,7 @@ def create_statistics_in_csv_format(exported_absolute_dimensions_file_path: str,
             absolute_dimensions_file.write("class,xmin,xmax,ymin,ymax,x_c,y_c,h,w\n")
             relative_dimensions_file.write("class,xmin,xmax,ymin,ymax,x_c,y_c,h,w\n")
 
-            for (image_width,image_height,crop_objects) in all_objects:
+            for (image_width, image_height, crop_objects) in all_objects:
                 for crop_object in crop_objects:
                     class_name = crop_object.clsname
                     top, left, bottom, right = crop_object.bounding_box
@@ -77,9 +72,16 @@ def create_statistics_in_csv_format(exported_absolute_dimensions_file_path: str,
                     y_center = height / 2.0
 
                     absolute_dimensions_file.write(
-                            "{0},{1},{2},{3},{4},{5},{6},{7},{8}\n".format(class_name, left, right, top, bottom, x_center,
-                                                                           y_center,
-                                                                           height, width))
+                        "{0},{1},{2},{3},{4},{5},{6},{7},{8}\n".format(class_name, left, right, top, bottom, x_center,
+                                                                       y_center,
+                                                                       height, width))
+                    relative_dimensions_file.write(
+                        "{0},{1},{2},{3},{4},{5},{6},{7},{8}\n".
+                            format(class_name, left / image_width, right / image_width,
+                                   top / image_height, bottom / image_height,
+                                   x_center / image_width, y_center / image_height,
+                                   height / image_height, width / image_width)
+                    )
 
 
 if __name__ == "__main__":
