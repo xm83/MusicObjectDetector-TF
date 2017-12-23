@@ -3,7 +3,7 @@ matplotlib
 Pillow >= 4.2.1
 graphviz == 0.8 # for graphviz, installation via the system might be required, e.g. sudo apt-get install graphviz
 pytest
-protobuf == 3.4.1
+protobuf == 3.4.0
 
 # Use pip install ... to install these
 tensorflow == 1.4.0
