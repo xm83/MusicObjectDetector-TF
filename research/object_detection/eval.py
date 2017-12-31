@@ -79,7 +79,6 @@ FLAGS = flags.FLAGS
 
 
 def main(unused_argv):
-<<<<<<< HEAD
     # Uncomment the next lines on Linux to run the evaluation on the CPU
     # config = tf.ConfigProto(
     #         device_count={'GPU': 0}
