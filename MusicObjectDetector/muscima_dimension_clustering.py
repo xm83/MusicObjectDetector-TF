@@ -3,6 +3,7 @@ import re
 from glob import glob
 from typing import Tuple, List
 
+import numpy
 from PIL import Image
 from muscima.cropobject import CropObject
 from omrdatasettools.image_generators.MuscimaPlusPlusImageGenerator import MuscimaPlusPlusImageGenerator
@@ -41,8 +42,6 @@ def collect_dimensions(muscima_image_directory: str,
         height = image.height
 
         all_objects.append((width, height, crop_objects))
-
-        break
 
     if os.path.exists(exported_absolute_dimensions_file_path):
         os.remove(exported_absolute_dimensions_file_path)
