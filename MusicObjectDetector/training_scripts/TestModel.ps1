@@ -14,11 +14,12 @@ cd $pathToGitRoot/research
 # $configuration = "faster_rcnn_resnet50_muscima_pretrained2"
 # $configuration = "faster_rcnn_resnet50_muscima_windows"
 # $configuration = "faster_rcnn_resnet50_muscima_windows_2"
+# $configuration = "faster_rcnn_inception_resnet_v2_atrous_muscima_pretrained_with_stafflines_data_augmentation"
 # $configuration = "faster_rcnn_inception_resnet_v2_atrous_muscima_pretrained_with_stafflines_more_scales_and_ratios"
 # $configuration = "faster_rcnn_inception_resnet_v2_atrous_muscima_pretrained_with_stafflines_more_scales_and_ratios2"
 # $configuration = "rfcn_inception_resnet_v2_atrous_muscima_pretrained"
 # $configuration = "rfcn_inception_resnet_v2_atrous_muscima_pretrained_reduced_classes"
-$configuration = "rfcn_inception_resnet_v2_atrous_muscima_pretrained_reduced_classes2"
+# $configuration = "rfcn_inception_resnet_v2_atrous_muscima_pretrained_reduced_classes2"
 # $configuration = "rfcn_resnet50_muscima"
 # $configuration = "rfcn_resnet50_muscima_pretrained_no_staff_lines"
 # $configuration = "rfcn_resnet50_muscima_pretrained_reduced_classes"
@@ -30,6 +31,7 @@ $configuration = "rfcn_inception_resnet_v2_atrous_muscima_pretrained_reduced_cla
 # $configuration = "ssd_inception_v2_muscima_150x300_pretrained_reduced_classes_no_stafflines"
 # $configuration = "ssd_mobilenet_v1_muscima_150x300"
 # $configuration = "ssd_mobilenet_v1_muscima_150x300_pretrained"
+$configuration = "ssd_inception_v2_muscima_300x600_pretrained_2"
 
 
 Start-Transcript -path "$($pathToTranscript)/TestModel-$($configuration).txt" -append
