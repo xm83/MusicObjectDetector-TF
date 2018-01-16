@@ -12,7 +12,7 @@ from omrdatasettools.downloaders.MuscimaPlusPlusDatasetDownloader import Muscima
 from omrdatasettools.image_generators.MuscimaPlusPlusImageGenerator import MuscimaPlusPlusImageGenerator
 from tqdm import tqdm
 
-from muscima_annotation_generator import create_annotations_in_plain_format, create_annotations_in_pascal_voc_format
+from muscima_annotation_generator import create_annotations_in_csv_format, create_annotations_in_pascal_voc_format
 
 
 def cut_images(muscima_image_directory: str, staff_vertical_positions_file: str,
@@ -97,7 +97,7 @@ def cut_images(muscima_image_directory: str, staff_vertical_positions_file: str,
 
                 cropped_image = image.crop(image_crop_bounding_box).convert('RGB')
 
-                create_annotations_in_plain_format(exported_annotations_file_path, objects_appearing_in_cropped_image)
+                create_annotations_in_csv_format(exported_annotations_file_path, objects_appearing_in_cropped_image)
                 create_annotations_in_pascal_voc_format(annotations_path, file_name, objects_appearing_in_cropped_image,
                                                         cropped_image.width, cropped_image.height, 3)
 
@@ -206,8 +206,8 @@ if __name__ == "__main__":
     cut_images("data/cvcmuscima_staff_removal/*/ideal/*/image/*.png",
                "data/Staff-Vertical-Positions.txt",
                "data/muscima_pp_cropped_images_with_stafflines",
-               "data/muscima_pp_raw", "data/Annotations.txt", "data/Annotations")
+               "data/muscima_pp_raw", "data/Annotations.csv", "data/Annotations")
     cut_images("data/cvcmuscima_staff_removal/*/ideal/*/symbol/*.png",
                "data/Staff-Vertical-Positions.txt",
                "data/muscima_pp_cropped_images_without_stafflines",
-               "data/muscima_pp_raw", "data/Annotations.txt", "data/Annotations")
+               "data/muscima_pp_raw", "data/Annotations.csv", "data/Annotations")

@@ -6,9 +6,10 @@ from typing import List, Tuple
 from lxml.etree import Element, SubElement
 
 
-def create_annotations_in_plain_format(exported_annotations_file_path: str, objects_appearing_in_cropped_image: List[
+def create_annotations_in_csv_format(exported_annotations_file_path: str, objects_appearing_in_cropped_image: List[
     Tuple[str, str, Tuple[int, int, int, int]]]):
     with open(exported_annotations_file_path, "a") as annotations_file:
+        annotations_file.write("filename,left,top,right,bottom,class")
         for object_appearing_in_cropped_image in objects_appearing_in_cropped_image:
             file_name = object_appearing_in_cropped_image[0]
             class_name = object_appearing_in_cropped_image[1]
