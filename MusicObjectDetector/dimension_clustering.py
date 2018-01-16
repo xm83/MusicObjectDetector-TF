@@ -1,4 +1,5 @@
 import random
+from typing import Tuple
 
 import cv2
 import numpy
@@ -34,7 +35,7 @@ def avg_IOU(X, centroids):
     return sum / n
 
 
-def kmeans(X: numpy.ndarray, centroids: numpy.ndarray) -> numpy.ndarray:
+def kmeans(X: numpy.ndarray, centroids: numpy.ndarray) -> Tuple[numpy.ndarray, numpy.ndarray]:
     N = X.shape[0]
     k, dim = centroids.shape
     prev_assignments = numpy.ones(N) * (-1)
@@ -83,7 +84,9 @@ def visualize_anchors(anchors: numpy.ndarray, visualization_width: int = 1000, v
         w = int(w * visualization_width)
         h = int(h * visualization_height)
         # print(w, h)
-        cv2.rectangle(blank_image, (10 + i * stride_w, 10 + i * stride_h), (w, h), colors[i])
+        left_upper_corner = (10 + i * stride_w, 10 + i * stride_h)
+        right_lower_corner = (left_upper_corner[0] + w, left_upper_corner[1] + h)
+        cv2.rectangle(blank_image, left_upper_corner, right_lower_corner, colors[i])
 
     cv2.imwrite("anchors-{0}.png".format(len(anchors)), blank_image)
 
@@ -94,16 +97,21 @@ def visualize_anchors(anchors: numpy.ndarray, visualization_width: int = 1000, v
 
 if __name__ == "__main__":
     annotation_dimensions = pandas.read_csv("data/bounding_box_dimensions_relative.csv")
-    annotation_dimensions.plot.scatter(x='w', y='h', s=0.1, c='red')
+    visualization_width, visualization_height = 3500, 1500
+
+    # annotation_dimensions = pandas.read_csv("data/bounding_box_dimensions_cropped_images_relative.csv")
+    # visualization_width, visualization_height = 600, 300
+
+    total_number_of_clusters = 10
+
+    annotation_dimensions.plot.scatter(x='width', y='height', s=0.1, c='red')
     plt.show()
 
-    dims = annotation_dimensions.iloc[:, 7:9].as_matrix()
+    dims = annotation_dimensions[['width', 'height']].as_matrix()
 
     statistics = []
 
-    # num_clusters = 5
-    # if True:
-    for num_clusters in tqdm(range(1, 11)):  # we make 1 through 10 clusters
+    for num_clusters in tqdm(range(1, total_number_of_clusters + 1)):
         indices = [random.randrange(dims.shape[0]) for i in range(num_clusters)]
         initial_centroids = dims[indices]
         meanIntersectionOverUnion, centroids = kmeans(dims, initial_centroids)
@@ -111,7 +119,13 @@ if __name__ == "__main__":
 
     for (clusters, iou, centroids) in statistics:
         print("{0} clusters: {1:.4f} mean IOU".format(clusters, iou))
+        for c in centroids:
+            print("Ratio: {0:.4f} = {1:.0f}x{2:.0f} px scaled to {3}x{4} image".format(c[0] / c[1],
+                                                                                       c[0] * visualization_width,
+                                                                                       c[1] * visualization_height,
+                                                                                       visualization_width,
+                                                                                       visualization_height))
 
     for (clusters, iou, centroids) in statistics:
-        visualize_anchors(centroids)
+        visualize_anchors(centroids, visualization_width, visualization_height)
         print("{0} clusters: Centroids = {1}".format(clusters, centroids))
