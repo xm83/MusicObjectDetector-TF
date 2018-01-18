@@ -44,41 +44,11 @@ python setup.py install
 ```
 
 ### Windows
-First, make sure you have [protocol buffers](https://developers.google.com/protocol-buffers/docs/downloads) installed, by heading over to [the download page](https://github.com/google/protobuf/releases/tag/v2.6.0) and download the version 2.6.0. Extract and copy the protoc.exe to a place, where you can run it from later on.  
+First, make sure you have [protocol buffers](https://developers.google.com/protocol-buffers/docs/downloads) installed, by heading over to [the download page](https://github.com/google/protobuf/releases/tag/v2.6.0) and download the version 3.4.0 (note that [3.5.0 does not work](https://github.com/google/protobuf/issues/3957)). Extract and copy the protoc.exe to a place, where you can run it from later on.  
 
 ```commandline
 cd research
 protoc object_detection/protos/*.proto --python_out=.
-```
-if protoc does not understand the *-operator, build the files individually:
-```commandline
-protoc object_detection\protos\anchor_generator.proto               --python_out=.
-protoc object_detection\protos\argmax_matcher.proto                 --python_out=.
-protoc object_detection\protos\bipartite_matcher.proto              --python_out=.
-protoc object_detection\protos\box_coder.proto                      --python_out=.
-protoc object_detection\protos\box_predictor.proto                  --python_out=.
-protoc object_detection\protos\eval.proto                           --python_out=.
-protoc object_detection\protos\faster_rcnn.proto                    --python_out=.
-protoc object_detection\protos\faster_rcnn_box_coder.proto          --python_out=.
-protoc object_detection\protos\grid_anchor_generator.proto          --python_out=.
-protoc object_detection\protos\hyperparams.proto                    --python_out=.
-protoc object_detection\protos\image_resizer.proto                  --python_out=.
-protoc object_detection\protos\input_reader.proto                   --python_out=.
-protoc object_detection\protos\keypoint_box_coder.proto             --python_out=.
-protoc object_detection\protos\losses.proto                         --python_out=.
-protoc object_detection\protos\matcher.proto                        --python_out=.
-protoc object_detection\protos\mean_stddev_box_coder.proto          --python_out=.
-protoc object_detection\protos\model.proto                          --python_out=.
-protoc object_detection\protos\optimizer.proto                      --python_out=.
-protoc object_detection\protos\pipeline.proto                       --python_out=.
-protoc object_detection\protos\post_processing.proto                --python_out=.
-protoc object_detection\protos\preprocessor.proto                   --python_out=.
-protoc object_detection\protos\region_similarity_calculator.proto   --python_out=.
-protoc object_detection\protos\square_box_coder.proto               --python_out=.
-protoc object_detection\protos\ssd.proto                            --python_out=.
-protoc object_detection\protos\ssd_anchor_generator.proto           --python_out=.
-protoc object_detection\protos\string_int_label_map.proto           --python_out=.
-protoc object_detection\protos\train.proto                          --python_out=.
 ```
 
 Install the python packages
@@ -94,35 +64,75 @@ python setup.py install
 Now add the [source to the python path](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md#add-libraries-to-pythonpath) or just copy the `object_detection` folder and the `slim` folder into your `[Anaconda3]/Lib/site-packages` directory. 
 
 
-# Dataset
+## Dataset
 If you are just interested in the dataset, the split and the annotations used in this project, you can run the following scripts to reproduce the dataset locally:
 
 ```
 # cd into MusicObjectDetector folder
-python generate_mapping.py data/muscima_pp_raw/v0.9.1/data/cropobjects mapping_reduced_class2.txt
 python muscima_image_cutter.py
 python DatasetSplitter.py --source_directory=data/muscima_pp_cropped_images_with_stafflines --destination_directory=data/training_validation_test_with_stafflines
 python DatasetSplitter.py --source_directory=data/muscima_pp_cropped_images_without_stafflines --destination_directory=data/training_validation_test_without_stafflines
-
-(cd ../research; python ../MusicObjectDetector/create_muscima_tf_record.py --data_dir=../MusicObjectDetector/data/training_validation_test_with_stafflines --set=training --annotations_dir=Annotations --output_path=../MusicObjectDetector/data/training_validation_test_with_stafflines/training.record --label_map_path=../MusicObjectDetector/mapping_reduced_class2.txt)
-(cd ../research; python ../MusicObjectDetector/create_muscima_tf_record.py --data_dir=../MusicObjectDetector/data/training_validation_test_with_stafflines --set=validation --annotations_dir=Annotations --output_path=../MusicObjectDetector/data/training_validation_test_with_stafflines/validation.record --label_map_path=../MusicObjectDetector/mapping_reduced_class2.txt)
-(cd ../research; python ../MusicObjectDetector/create_muscima_tf_record.py --data_dir=../MusicObjectDetector/data/training_validation_test_with_stafflines --set=test --annotations_dir=Annotations --output_path=../MusicObjectDetector/data/training_validation_test_with_stafflines/test.record --label_map_path=../MusicObjectDetector/mapping_reduced_class2.txt)
-
-(cd ../research; python ../MusicObjectDetector/create_muscima_tf_record.py --data_dir=../MusicObjectDetector/data/training_validation_test_without_stafflines --set=training --annotations_dir=Annotations --output_path=../MusicObjectDetector/data/training_validation_test_without_stafflines/training.record --label_map_path=../MusicObjectDetector/mapping_reduced_class2.txt)
-(cd ../research; python ../MusicObjectDetector/create_muscima_tf_record.py --data_dir=../MusicObjectDetector/data/training_validation_test_without_stafflines --set=validation --annotations_dir=Annotations --output_path=../MusicObjectDetector/data/training_validation_test_without_stafflines/validation.record --label_map_path=../MusicObjectDetector/mapping_reduced_class2.txt)
-(cd ../research; python ../MusicObjectDetector/create_muscima_tf_record.py --data_dir=../MusicObjectDetector/data/training_validation_test_without_stafflines --set=test --annotations_dir=Annotations --output_path=../MusicObjectDetector/data/training_validation_test_without_stafflines/test.record --label_map_path=../MusicObjectDetector/mapping_reduced_class2.txt)
 ```
-    
-These two scripts will download the datasets automatically, generate cropped images along an Annotation.txt file and split the images into three reproducible parts for training, validation and test. 
+  
+These scripts will download the datasets automatically, generate cropped images along an Annotation.csv file and split the images into three reproducible parts for training, validation and test. 
 
 Images will be cropped first vertically along the staffs and then horizontally (red boxes) like this (with orange regions overlapping between two regions):
 ![Cropping of images](images/w-05_p006_crop_regions.png) 
+
+Now you can create the Tensorflow Records that are required for actually running the training.
+
+```
+python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=training --annotations_dir=Annotations --output_path=data/all_classes_with_staff_lines_writer_independent_split/training.record --label_map_path=mapping_all_classes.txt
+python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=validation --annotations_dir=Annotations --output_path=data/all_classes_with_staff_lines_writer_independent_split/validation.record --label_map_path=mapping_all_classes.txt
+python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=test --annotations_dir=Annotations --output_path=data/all_classes_with_staff_lines_writer_independent_split/test.record --label_map_path=mapping_all_classes.txt
+
+python create_muscima_tf_record.py --data_dir=data/training_validation_test_without_stafflines --set=training --annotations_dir=Annotations --output_path=data/all_classes_without_staff_lines_writer_independent_split/training.record --label_map_path=mapping_all_classes.txt
+python create_muscima_tf_record.py --data_dir=data/training_validation_test_without_stafflines --set=validation --annotations_dir=Annotations --output_path=data/all_classes_without_staff_lines_writer_independent_split/validation.record --label_map_path=mapping_all_classes.txt
+python create_muscima_tf_record.py --data_dir=data/training_validation_test_without_stafflines --set=test --annotations_dir=Annotations --output_path=data/all_classes_without_staff_lines_writer_independent_split/test.record --label_map_path=mapping_all_classes.txt
+```
+
+ If you want to use only a reduced number of classes, you can provide other mappings like `mapping_71_classes.txt`:
+ 
+ ```
+ python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=training --annotations_dir=Annotations --output_path=data/71_classes_with_staff_lines_writer_independent_split/training.record --label_map_path=mapping_71_classes.txt
+ python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=validation --annotations_dir=Annotations --output_path=data/71_classes_with_staff_lines_writer_independent_split/validation.record --label_map_path=mapping_71_classes.txt
+ python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=test --annotations_dir=Annotations --output_path=data/71_classes_with_staff_lines_writer_independent_split/test.record --label_map_path=mapping_71_classes.txt
+ 
+ python create_muscima_tf_record.py --data_dir=data/training_validation_test_without_stafflines --set=training --annotations_dir=Annotations --output_path=data/71_classes_without_staff_lines_writer_independent_split/training.record --label_map_path=mapping_71_classes.txt
+ python create_muscima_tf_record.py --data_dir=data/training_validation_test_without_stafflines --set=validation --annotations_dir=Annotations --output_path=data/71_classes_without_staff_lines_writer_independent_split/validation.record --label_map_path=mapping_71_classes.txt
+ python create_muscima_tf_record.py --data_dir=data/training_validation_test_without_stafflines --set=test --annotations_dir=Annotations --output_path=data/71_classes_without_staff_lines_writer_independent_split/test.record --label_map_path=mapping_71_classes.txt
+ ```
+ 
+## Running the training
+For running the training, you need to change the paths, according to your system
+
+- in the configuration, you want to run, e.g. `configurations/faster_rcnn_inception_resnet_v2_atrous_muscima_pretrained_reduced_classes.config`
+- if you use them, in the PowerShell scripts in the `training_scripts` folder.
+
+Run the actual training script, by using the pre-defined Powershell scripts in the `training_scripts` folder, or by directly calling
+
+```
+# Start the training
+python [GIT_ROOT]/research/object_detection/train.py --logtostderr --pipeline_config_path="[GIT_ROOT]/MusicObjectDetector/configurations/[SELECTED_CONFIG].config" --train_dir="[GIT_ROOT]/MusicObjectDetector/data/checkpoints-[SELECTED_CONFIG]-train"
+
+# Start the validation
+python [GIT_ROOT]/research/object_detection/eval.py --logtostderr --pipeline_config_path="[GIT_ROOT]/MusicObjectDetector/configurations/[SELECTED_CONFIG].config" --checkpoint_dir="[GIT_ROOT]/MusicObjectDetector/data/checkpoints-[SELECTED_CONFIG]-train" --eval_dir="[GIT_ROOT]/MusicObjectDetector/data/checkpoints-[SELECTED_CONFIG]-validate"
+```
+
+A few remarks: The two scripts can and should be run at the same time, to get a live evaluation during the training. The values, may be visualized by calling `tensorboard --logdir=[GIT_ROOT]/MusicObjectDetector/data`.
+
+Notice that usually Tensorflow allocates the entire memory of your graphics card for the training. In order to run both training and validation at the same time, you might have to restrict Tensorflow from doing so, by opening `train.py` and `eval.py` and uncomment the respective (prepared) lines in the main function. E.g.:
+
+```
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.3)
+sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+```
 
 # License
 
 Published under MIT License,
 
-Copyright (c) 2017 [Alexander Pacha](http://alexanderpacha.com), [TU Wien](https://www.ims.tuwien.ac.at/people/alexander-pacha) and Kwon-Young Choi
+Copyright (c) 2018 [Alexander Pacha](http://alexanderpacha.com), [TU Wien](https://www.ims.tuwien.ac.at/people/alexander-pacha) and Kwon-Young Choi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
