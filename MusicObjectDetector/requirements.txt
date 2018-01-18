@@ -18,4 +18,4 @@ lxml
 pydot
 tqdm
 opencv-python
-omrdatasettools == 0.8
+omrdatasettools == 0.9
