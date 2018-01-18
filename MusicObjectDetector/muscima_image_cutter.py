@@ -15,14 +15,14 @@ from tqdm import tqdm
 from muscima_annotation_generator import create_annotations_in_csv_format, create_annotations_in_pascal_voc_format
 
 
-def cut_images(muscima_image_directory: str, staff_vertical_positions_file: str,
-               output_path: str, muscima_pp_raw_data_directory: str,
+def cut_images(muscima_image_directory: str, output_path: str, muscima_pp_raw_dataset_directory: str,
                exported_annotations_file_path: str, annotations_path: str):
     image_paths = glob(muscima_image_directory)
     os.makedirs(output_path, exist_ok=True)
 
     image_generator = MuscimaPlusPlusImageGenerator()
-    all_xml_files = image_generator.get_all_xml_file_paths(muscima_pp_raw_data_directory)
+    raw_data_directory = os.path.join(muscima_pp_raw_dataset_directory, "v1.0", "data", "cropobjects_withstaff")
+    all_xml_files = [y for x in os.walk(raw_data_directory) for y in glob(os.path.join(x[0], '*.xml'))]
 
     if os.path.exists(exported_annotations_file_path):
         os.remove(exported_annotations_file_path)
@@ -39,31 +39,13 @@ def cut_images(muscima_image_directory: str, staff_vertical_positions_file: str,
         page = result.group("page")
         crop_object_annotations.append(('w-' + writer, 'p' + page.zfill(3), crop_objects))
 
-    with open(staff_vertical_positions_file) as f:
-        content = f.readlines()
-    # you may also want to remove whitespace characters like `\n` at the end of each line
-    annotations = [x.strip().split(';') for x in content]
-
-    images_to_cut: List[Tuple[str, str, str, str]] = []
-
-    for image_path in image_paths:
+    for image_path in tqdm(image_paths, desc="Cutting images"):
         result = re.match(r".*(?P<writer>w-\d+).*(?P<page>p\d+).png", image_path)
         writer = result.group("writer")
         page = result.group("page")
-        coordinates = None
-        for annotation in annotations:
-            if annotation[0] == writer and annotation[1] == page:
-                coordinates = annotation[2]
-                break
-
-        if coordinates is not None:
-            images_to_cut.append((image_path, writer, page, coordinates))
-
-    for image_to_cut in tqdm(images_to_cut, desc="Cutting images"):
-        path, writer, page, coordinates = image_to_cut
-        staff_line_pairs = coordinates.split(',')
-        image = Image.open(path, "r")  # type: Image.Image
-        width = image.width
+        image = Image.open(image_path, "r")  # type: Image.Image
+        image_width = image.width
+        image_height = image.height
         objects_appearing_in_image: List[CropObject] = None
         for crop_object_annotation in crop_object_annotations:
             if writer == crop_object_annotation[0] and page == crop_object_annotation[1]:
@@ -74,21 +56,38 @@ def cut_images(muscima_image_directory: str, staff_vertical_positions_file: str,
             # Image has annotated staff-lines, but does not have corresponding crop-object annotations, so skip it
             continue
 
-        i = 1
-        for pair in staff_line_pairs:
-            y_top, y_bottom = map(int, pair.split(':'))
+        staff_objects = [x for x in objects_appearing_in_image if x.clsname == "staff"]
+        max_offset_before_first_and_after_last_staff = 120
+
+        if staff_objects is None:
+            # Image has no staff lines -> Report error
+            print("Error: Image {0} has no annotated staff lines".format(image_path))
+            continue
+
+        next_y_top = max(0, staff_objects[0].top - max_offset_before_first_and_after_last_staff)
+        last_bottom = min(staff_objects[len(staff_objects)-1].bottom + max_offset_before_first_and_after_last_staff, image_height)
+
+        output_image_counter = 1
+        for staff_index in range(len(staff_objects)):
+            staff = staff_objects[staff_index]
+            if staff_index < len(staff_objects) - 1:
+                y_bottom = staff_objects[staff_index+1].top
+            else:
+                y_bottom = last_bottom
+            y_top = next_y_top
+            next_y_top = staff.bottom
             previous_width = 0
             overlap = 100
             for crop_width in range(500, 3501, 500):
 
-                if crop_width > width:
-                    crop_width = width
+                if crop_width > image_width:
+                    crop_width = image_width
                 image_crop_bounding_box = (previous_width, y_top, crop_width, y_bottom)
                 image_crop_bounding_box_top_left_bottom_right = (y_top, previous_width, y_bottom, crop_width)
                 previous_width = crop_width - overlap
 
-                file_name = "{0}_{1}_{2}.jpg".format(writer, page, i)
-                i += 1
+                file_name = "{0}_{1}_{2}.jpg".format(writer, page, output_image_counter)
+                output_image_counter += 1
 
                 objects_appearing_in_cropped_image = \
                     compute_objects_appearing_in_cropped_image(file_name,
@@ -200,14 +199,14 @@ if __name__ == "__main__":
     inverter = ImageInverter()
     # We would like to work with black-on-white images instead of white-on-black images
     inverter.invert_images(muscima_image_directory, "*.png")
-    #
-    shutil.copy("Staff-Vertical-Positions.txt", dataset_directory)
 
     cut_images("data/cvcmuscima_staff_removal/*/ideal/*/image/*.png",
-               "data/Staff-Vertical-Positions.txt",
                "data/muscima_pp_cropped_images_with_stafflines",
-               "data/muscima_pp_raw", "data/Annotations.csv", "data/Annotations")
+               muscima_pp_raw_dataset_directory,
+               "data/Annotations.csv",
+               "data/Annotations")
     cut_images("data/cvcmuscima_staff_removal/*/ideal/*/symbol/*.png",
-               "data/Staff-Vertical-Positions.txt",
                "data/muscima_pp_cropped_images_without_stafflines",
-               "data/muscima_pp_raw", "data/Annotations.csv", "data/Annotations")
+               muscima_pp_raw_dataset_directory,
+               "data/Annotations.csv",
+               "data/Annotations")
