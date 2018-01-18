@@ -133,7 +133,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--independent_set",
         type=str,
-        default="data/muscima_pp_raw/v0.9.1/specifications/testset-independent.txt",
+        default="data/muscima_pp_raw/v1.0/specifications/testset-independent.txt",
         help="text file with independent writer set")
 
     flags, unparsed = parser.parse_known_args()
