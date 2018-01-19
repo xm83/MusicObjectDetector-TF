@@ -11,8 +11,9 @@ from omrdatasettools.downloaders.CvcMuscimaDatasetDownloader import CvcMuscimaDa
 from omrdatasettools.downloaders.MuscimaPlusPlusDatasetDownloader import MuscimaPlusPlusDatasetDownloader
 from omrdatasettools.image_generators.MuscimaPlusPlusImageGenerator import MuscimaPlusPlusImageGenerator
 from tqdm import tqdm
+import pandas
 
-from muscima_annotation_generator import create_annotations_in_csv_format, create_annotations_in_pascal_voc_format
+from muscima_annotation_generator import create_annotations_in_pascal_voc_format
 
 
 def cut_images(muscima_image_directory: str, output_path: str, muscima_pp_raw_dataset_directory: str,
@@ -39,6 +40,7 @@ def cut_images(muscima_image_directory: str, output_path: str, muscima_pp_raw_da
         page = result.group("page")
         crop_object_annotations.append(('w-' + writer, 'p' + page.zfill(3), crop_objects))
 
+    crop_annotations = []
     for image_path in tqdm(image_paths, desc="Cutting images"):
         result = re.match(r".*(?P<writer>w-\d+).*(?P<page>p\d+).png", image_path)
         writer = result.group("writer")
@@ -65,13 +67,14 @@ def cut_images(muscima_image_directory: str, output_path: str, muscima_pp_raw_da
             continue
 
         next_y_top = max(0, staff_objects[0].top - max_offset_before_first_and_after_last_staff)
-        last_bottom = min(staff_objects[len(staff_objects)-1].bottom + max_offset_before_first_and_after_last_staff, image_height)
+        last_bottom = min(staff_objects[len(staff_objects) - 1].bottom + max_offset_before_first_and_after_last_staff,
+                          image_height)
 
         output_image_counter = 1
         for staff_index in range(len(staff_objects)):
             staff = staff_objects[staff_index]
             if staff_index < len(staff_objects) - 1:
-                y_bottom = staff_objects[staff_index+1].top
+                y_bottom = staff_objects[staff_index + 1].top
             else:
                 y_bottom = last_bottom
             y_top = next_y_top
@@ -96,13 +99,22 @@ def cut_images(muscima_image_directory: str, output_path: str, muscima_pp_raw_da
 
                 cropped_image = image.crop(image_crop_bounding_box).convert('RGB')
 
-                create_annotations_in_csv_format(exported_annotations_file_path, objects_appearing_in_cropped_image)
+                for object_appearing_in_cropped_image in objects_appearing_in_cropped_image:
+                    file_name = object_appearing_in_cropped_image[0]
+                    class_name = object_appearing_in_cropped_image[1]
+                    translated_bounding_box = object_appearing_in_cropped_image[2]
+                    trans_top, trans_left, trans_bottom, trans_right = translated_bounding_box
+                    crop_annotations.append([file_name, trans_left, trans_top, trans_right, trans_bottom, class_name])
+
                 create_annotations_in_pascal_voc_format(annotations_path, file_name, objects_appearing_in_cropped_image,
                                                         cropped_image.width, cropped_image.height, 3)
 
                 # draw_bounding_boxes(cropped_image, objects_appearing_in_cropped_image)
                 output_file = os.path.join(output_path, file_name)
                 cropped_image.save(output_file, "JPEG", quality=95)
+
+    annotation_data = pandas.DataFrame(crop_annotations, columns=['filename', 'left', 'top', 'right', 'bottom', 'class'])
+    annotation_data.to_csv(exported_annotations_file_path, index=False)
 
 
 def intersection(ai, bi):

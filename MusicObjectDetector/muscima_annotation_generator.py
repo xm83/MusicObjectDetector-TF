@@ -6,21 +6,6 @@ from typing import List, Tuple
 from lxml.etree import Element, SubElement
 
 
-def create_annotations_in_csv_format(exported_annotations_file_path: str, objects_appearing_in_cropped_image: List[
-    Tuple[str, str, Tuple[int, int, int, int]]]):
-    with open(exported_annotations_file_path, "a") as annotations_file:
-        annotations_file.write("filename,left,top,right,bottom,class")
-        for object_appearing_in_cropped_image in objects_appearing_in_cropped_image:
-            file_name = object_appearing_in_cropped_image[0]
-            class_name = object_appearing_in_cropped_image[1]
-            translated_bounding_box = object_appearing_in_cropped_image[2]
-            trans_top, trans_left, trans_bottom, trans_right = translated_bounding_box
-            annotations_file.write("{0},{1},{2},{3},{4},{5}\n".format(file_name,
-                                                                      trans_left,
-                                                                      trans_top,
-                                                                      trans_right,
-                                                                      trans_bottom,
-                                                                      class_name))
 
 
 def create_annotations_in_pascal_voc_format(annotations_folder: str,
