@@ -128,6 +128,23 @@ gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.3)
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 ```
 
+# Dimension clustering
+
+For optimizing the performance of the detector, we adopted the dimensions clustering algorithm, proposed in the [YOLO 9000 paper](https://arxiv.org/abs/1612.08242).
+While preparing the dataset, the `muscima_image_cutter.py` script created a file called `Annotations.csv` and a folder called `Annotations`. 
+Both will contain the same annotations, but in different formats. While the csv-file contains all annotations in a plain list, the Annotations
+folder contains one xml-file per image, complying with the format used for the [Pascal VOC project](http://host.robots.ox.ac.uk/pascal/VOC/).
+
+To perform dimension clustering on the cropped images, run the following scripts:
+```
+python generate_muscima_statistics.py
+python muscima_dimension_clustering.py
+```
+The first script will load all annotations and create four csv-files containing the dimensions for each annotation 
+from all images, including their relative sizes, compared to the entire image.
+The second script loads those statistics and performs dimension clustering, use a k-means algorithm on the relative 
+dimensions of annotations.   
+
 # License
 
 Published under MIT License,
