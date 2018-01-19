@@ -105,6 +105,8 @@ if __name__ == "__main__":
     sizes_df = pandas.DataFrame(sizes, columns=["width", "height"])
     visualization_width, visualization_height = sizes_df["width"].mean(), sizes_df["height"].mean()
     print("Average image size: {0:.0f}x{1:.0f}px".format(visualization_width, visualization_height))
+    print("Minimum image size: {0:.0f}x{1:.0f}px".format(sizes_df["width"].min(), sizes_df["height"].min()))
+    print("Maximum image size: {0:.0f}x{1:.0f}px".format(sizes_df["width"].max(), sizes_df["height"].max()))
 
     total_number_of_clusters_to_evaluate = 10
 
