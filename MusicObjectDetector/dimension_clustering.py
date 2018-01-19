@@ -1,10 +1,12 @@
 import random
+from glob import glob
 from typing import Tuple
 
 import cv2
 import numpy
 import pandas
 import matplotlib.pyplot as plt
+from PIL import Image
 from tqdm import tqdm
 
 
@@ -40,7 +42,6 @@ def kmeans(X: numpy.ndarray, centroids: numpy.ndarray) -> Tuple[numpy.ndarray, n
     k, dim = centroids.shape
     prev_assignments = numpy.ones(N) * (-1)
     iter = 0
-    old_D = numpy.zeros((N, k))
 
     while True:
         D = []
@@ -50,8 +51,6 @@ def kmeans(X: numpy.ndarray, centroids: numpy.ndarray) -> Tuple[numpy.ndarray, n
             D.append(d)
         D = numpy.array(D)  # D.shape = (N,k)
         mean_IOU = numpy.mean(D)
-
-        # print("iter {}: mean iou = {}; dists = {}".format(iter, mean_IOU, numpy.sum(numpy.abs(old_D - D))))
 
         # assign samples to centroids
         assignments = numpy.argmin(D, axis=1)
@@ -67,7 +66,6 @@ def kmeans(X: numpy.ndarray, centroids: numpy.ndarray) -> Tuple[numpy.ndarray, n
             centroids[j] = centroid_sums[j] / (numpy.sum(assignments == j))
 
         prev_assignments = assignments.copy()
-        old_D = D.copy()
 
 
 def visualize_anchors(anchors: numpy.ndarray, visualization_width: int = 1000, visualization_height: int = 1000):
@@ -90,19 +88,25 @@ def visualize_anchors(anchors: numpy.ndarray, visualization_width: int = 1000, v
 
     cv2.imwrite("anchors-{0}.png".format(len(anchors)), blank_image)
 
-    # cv2.namedWindow('Image')
-    # cv2.imshow('Image', blank_image)
-    # cv2.waitKey()
-
 
 if __name__ == "__main__":
-    annotation_dimensions = pandas.read_csv("data/bounding_box_dimensions_relative.csv")
-    visualization_width, visualization_height = 3500, 1500
 
-    # annotation_dimensions = pandas.read_csv("data/bounding_box_dimensions_cropped_images_relative.csv")
-    # visualization_width, visualization_height = 600, 300
+    # Use this part for the full image
+    # annotation_dimensions = pandas.read_csv("data/bounding_box_dimensions_relative.csv")
+    # visualization_width, visualization_height = 3500, 1500
 
-    total_number_of_clusters = 10
+    # Use this part for cropped images
+    annotation_dimensions = pandas.read_csv("data/bounding_box_dimensions_cropped_images_relative.csv")
+    all_cropped_images = glob("data/muscima_pp_cropped_images_with_stafflines/*.jpg")
+    sizes = []
+    for cropped_image in tqdm(all_cropped_images, desc="Collecting image sizes"):
+        image = Image.open(cropped_image)
+        sizes.append(image.size)
+    sizes_df = pandas.DataFrame(sizes, columns=["width", "height"])
+    visualization_width, visualization_height = sizes_df["width"].mean(), sizes_df["height"].mean()
+    print("Average image size: {0:.0f}x{1:.0f}px".format(visualization_width, visualization_height))
+
+    total_number_of_clusters_to_evaluate = 3
 
     annotation_dimensions.plot.scatter(x='width', y='height', s=0.1, c='red')
     plt.show()
@@ -111,21 +115,25 @@ if __name__ == "__main__":
 
     statistics = []
 
-    for num_clusters in tqdm(range(1, total_number_of_clusters + 1)):
+    for num_clusters in tqdm(range(1, total_number_of_clusters_to_evaluate + 1), desc="Computing clusters"):
         indices = [random.randrange(dims.shape[0]) for i in range(num_clusters)]
         initial_centroids = dims[indices]
         meanIntersectionOverUnion, centroids = kmeans(dims, initial_centroids)
         statistics.append((num_clusters, meanIntersectionOverUnion, centroids))
 
+    grid_size = 32
     for (clusters, iou, centroids) in statistics:
         print("{0} clusters: {1:.4f} mean IOU".format(clusters, iou))
+        scales = []
         for c in centroids:
-            print("Ratio: {0:.4f} = {1:.0f}x{2:.0f} px scaled to {3}x{4} image".format(c[0] / c[1],
-                                                                                       c[0] * visualization_width,
-                                                                                       c[1] * visualization_height,
-                                                                                       visualization_width,
-                                                                                       visualization_height))
-
-    for (clusters, iou, centroids) in statistics:
-        visualize_anchors(centroids, visualization_width, visualization_height)
-        print("{0} clusters: Centroids = {1}".format(clusters, centroids))
+            print(
+                "[{0:.4f} {1:.4f}] - Ratio: {2:.4f} = {3:.0f}x{4:.0f}px scaled "
+                "to {5:.0f}x{6:.0f} image or {7:.2f}x{8:.2f}px relative to {9}x{9} grid".format(
+                    c[0], c[1], c[0] / c[1], c[0] * visualization_width, c[1] * visualization_height,
+                    visualization_width, visualization_height, c[0] * grid_size, c[1] * grid_size,
+                    grid_size))
+            scales.append(c[0] * visualization_width / grid_size)
+            scales.append(c[1] * visualization_height / grid_size)
+        scales.sort()
+        print("Scales relative to {0}x{0} grid: {1}".format(grid_size, ["{0:.2f}".format(x) for x in scales]))
+        visualize_anchors(centroids, int(visualization_width), int(visualization_height))
