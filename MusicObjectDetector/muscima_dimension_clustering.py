@@ -106,7 +106,7 @@ if __name__ == "__main__":
     visualization_width, visualization_height = sizes_df["width"].mean(), sizes_df["height"].mean()
     print("Average image size: {0:.0f}x{1:.0f}px".format(visualization_width, visualization_height))
 
-    total_number_of_clusters_to_evaluate = 3
+    total_number_of_clusters_to_evaluate = 10
 
     annotation_dimensions.plot.scatter(x='width', y='height', s=0.1, c='red')
     plt.show()
