@@ -134,10 +134,8 @@ It is recommended that you use pre-trained weights for known networks to speed u
 
 ```json
 train-config: {
-  ...
   fine_tune_checkpoint: "C:/Users/Alex/Repositories/MusicObjectDetector-TF/MusicObjectDetector/data/faster_rcnn_inception_resnet_v2_atrous_coco_2017_11_08/model.ckpt"
   from_detection_checkpoint: true
-  ...
 }
 ```
 
