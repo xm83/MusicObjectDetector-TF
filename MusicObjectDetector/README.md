@@ -44,7 +44,7 @@ python setup.py install
 ```
 
 ### Windows
-First, make sure you have [protocol buffers](https://developers.google.com/protocol-buffers/docs/downloads) installed, by heading over to [the download page](https://github.com/google/protobuf/releases/tag/v2.6.0) and download the version 3.4.0 (note that [3.5.0 does not work](https://github.com/google/protobuf/issues/3957)). Extract and copy the protoc.exe to a place, where you can run it from later on.  
+First, make sure you have [protocol buffers](https://developers.google.com/protocol-buffers/docs/downloads) installed, by heading over to [the download page](https://github.com/google/protobuf/releases/download/v3.4.0/) and download the version 3.4.0 (note that [3.5.0 does not work](https://github.com/google/protobuf/issues/3957)). Extract and copy the protoc.exe to a place, where you can run it from later on.  
 
 ```commandline
 cd research
