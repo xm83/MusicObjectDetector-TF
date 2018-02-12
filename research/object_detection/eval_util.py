@@ -41,13 +41,18 @@ def write_metrics(metrics, global_step, summary_dir):
   """
   logging.info('Writing metrics to tf summary.')
   summary_writer = tf.summary.FileWriter(summary_dir)
+  csv_results = os.path.join(summary_dir, "results.csv")
+  # WARNING: all metrics will be printed out, like the mAP for all classes, etc
+  f = open(csv_results, "w")
   for key in sorted(metrics):
     summary = tf.Summary(value=[
         tf.Summary.Value(tag=key, simple_value=metrics[key]),
     ])
     summary_writer.add_summary(summary, global_step)
     logging.info('%s: %f', key, metrics[key])
+    f.write(",".join([key.split("/")[-1], str(metrics[key])]))
   summary_writer.close()
+  f.close()
   logging.info('Metrics written to tf summary.')
 
 
