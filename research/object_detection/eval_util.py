@@ -41,20 +41,21 @@ def write_metrics(metrics, global_step, summary_dir):
   """
   logging.info('Writing metrics to tf summary.')
   summary_writer = tf.summary.FileWriter(summary_dir)
-  csv_results = os.path.join(summary_dir, "results.csv")
-  # WARNING: all metrics will be printed out, like the mAP for all classes, etc
-  f = open(csv_results, "w")
   for key in sorted(metrics):
     summary = tf.Summary(value=[
         tf.Summary.Value(tag=key, simple_value=metrics[key]),
     ])
     summary_writer.add_summary(summary, global_step)
     logging.info('%s: %f', key, metrics[key])
-    f.write(",".join([key.split("/")[-1], str(metrics[key])]))
   summary_writer.close()
-  f.close()
+
   logging.info('Metrics written to tf summary.')
 
+def write_metrics_to_csv(metrics, summary_dir):
+    csv_results = os.path.join(summary_dir, "results.csv")
+    with open(csv_results, "w") as f:
+        for key in sorted(metrics):
+            f.write(",".join([key.split("/")[-1], str(metrics[key])]))
 
 # TODO: Add tests.
 def visualize_detection_results(result_dict,
@@ -306,7 +307,8 @@ def repeated_checkpoint_run(tensor_dict,
                             max_number_of_evaluations=None,
                             master='',
                             save_graph=False,
-                            save_graph_dir=''):
+                            save_graph_dir='',
+                            write_csv=False):
   """Periodically evaluates desired tensors using checkpoint_dirs or restore_fn.
 
   This function repeatedly loads a checkpoint and evaluates a desired
@@ -385,6 +387,8 @@ def repeated_checkpoint_run(tensor_dict,
                                                   master, save_graph,
                                                   save_graph_dir)
       write_metrics(metrics, global_step, summary_dir)
+      if write_csv:
+        write_metrics_to_csv(metrics, summary_dir)
     number_of_evaluations += 1
 
     if (max_number_of_evaluations and
