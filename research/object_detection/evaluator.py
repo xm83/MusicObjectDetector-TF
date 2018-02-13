@@ -113,7 +113,7 @@ def get_evaluators(eval_config, categories):
 
 
 def evaluate(create_input_dict_fn, create_model_fn, eval_config, categories,
-             checkpoint_dir, eval_dir):
+             checkpoint_dir, eval_dir, write_csv = False):
     """Evaluation function for detection models.
 
     Args:
@@ -207,6 +207,8 @@ def evaluate(create_input_dict_fn, create_model_fn, eval_config, categories,
                                    if eval_config.max_evals else None),
         master=eval_config.eval_master,
         save_graph=eval_config.save_graph,
-        save_graph_dir=(eval_dir if eval_config.save_graph else ''))
+        save_graph_dir=(eval_dir if eval_config.save_graph else ''),
+        write_csv=write_csv
+        )
 
     return metrics

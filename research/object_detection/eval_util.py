@@ -350,6 +350,7 @@ def repeated_checkpoint_run(tensor_dict,
       save_graph: whether or not the Tensorflow graph is saved as a pbtxt file.
       save_graph_dir: where to save on disk the Tensorflow graph. If store_graph
         is True this must be non-empty.
+      write_csv: Whether or not to create a CSV-report for the evaluation of each class score
 
     Returns:
       metrics: A dictionary containing metric names and values in the latest

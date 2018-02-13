@@ -75,6 +75,7 @@ flags.DEFINE_string('model_config_path', '',
 flags.DEFINE_boolean('run_once', False, 'Option to only run a single pass of '
                                         'evaluation. Overrides the `max_evals` parameter in the '
                                         'provided config.')
+flags.DEFINE_boolean('write_csv', False, 'True, if you want to create a CSV-summary for the precision of each class.')
 FLAGS = flags.FLAGS
 
 
@@ -138,7 +139,7 @@ def main(unused_argv):
         eval_config.max_evals = 1
 
     evaluator.evaluate(create_input_dict_fn, model_fn, eval_config, categories,
-                       FLAGS.checkpoint_dir, FLAGS.eval_dir)
+                       FLAGS.checkpoint_dir, FLAGS.eval_dir, FLAGS.write_csv)
 
 
 if __name__ == '__main__':
