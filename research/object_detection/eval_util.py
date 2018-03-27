@@ -49,6 +49,11 @@ def write_metrics(metrics, global_step, summary_dir):
         logging.info('%s: %f', key, metrics[key])
     logging.info('Metrics written to tf summary.')
 
+def write_metrics_to_csv(metrics, summary_dir):
+    csv_results = os.path.join(summary_dir, "results.csv")
+    with open(csv_results, "w") as f:
+        for key in sorted(metrics):
+            f.write(",".join([key.split("/")[-1], str(metrics[key])]) + "\n")
 
 # TODO: Add tests.
 def visualize_detection_results(result_dict,
