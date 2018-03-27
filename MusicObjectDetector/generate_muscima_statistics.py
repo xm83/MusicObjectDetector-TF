@@ -11,11 +11,11 @@ from omrdatasettools.image_generators.MuscimaPlusPlusImageGenerator import Musci
 from tqdm import tqdm
 
 
-def create_statistics_for_full_images(muscima_image_directory: str,
+def create_statistics_for_full_images(glob_pattern_for_retrieving_muscima_images: str,
                                       muscima_pp_raw_data_directory: str,
                                       exported_absolute_dimensions_file_path: str,
                                       exported_relative_dimensions_file_path: str):
-    image_paths = glob(muscima_image_directory)
+    image_paths = glob(glob_pattern_for_retrieving_muscima_images)
 
     if os.path.exists(exported_absolute_dimensions_file_path):
         os.remove(exported_absolute_dimensions_file_path)
