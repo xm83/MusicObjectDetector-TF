@@ -11,14 +11,14 @@ This is the repository for the fast and reliable Music Symbol detector with Deep
 The detailed results for various combinations of object-detector, feature-extractor, etc. can be found in [this spreadsheet](https://docs.google.com/spreadsheets/d/174-CnLO-rAoVMst0ngVGHguTlD39ebdxLX9ZLE9Pscw/edit?usp=sharing).
 
 
-# Running the application
+# Preparing the application
 This repository contains several scripts that can be used independently of each other. 
 Before running them, make sure that you have the necessary requirements installed. 
 
 ## Requirements
 
 - Python 3.6
-- Tensorflow 1.4.0 (or optionally tensorflow-gpu 1.4.0)
+- Tensorflow 1.7.0 (or optionally tensorflow-gpu 1.7.0)
 
 For installing Tensorflow and Keras we recommend using [Anaconda](https://www.continuum.io/downloads) or 
 [Miniconda](https://conda.io/miniconda.html) as Python distribution (we did so for preparing Travis-CI and it worked).
@@ -44,6 +44,11 @@ python setup.py install
 ```
 
 ### Windows
+
+Run `DownloadAndBuildProtocolBuffers.ps1` to automate this step or execute the steps described in the next section.
+
+#### Manual building
+
 First, make sure you have [protocol buffers](https://developers.google.com/protocol-buffers/docs/downloads) installed, by heading over to [the download page](https://github.com/google/protobuf/releases/download/v3.4.0/) and download the version 3.4.0 (note that [3.5.0 does not work](https://github.com/google/protobuf/issues/3957)). Extract and copy the protoc.exe to a place, where you can run it from later on.  
 
 ```commandline
@@ -61,10 +66,33 @@ python setup.py install
 
 > If you get the exception `error: could not create 'build': Cannot create a file when that file already exists` here, delete the `BUILD` file inside first
 
-Now add the [source to the python path](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md#add-libraries-to-pythonpath) or just copy the `object_detection` folder and the `slim` folder into your `[Anaconda3]/Lib/site-packages` directory. 
+## Append library to python path
+Execute these steps in the shell that runs the training/inference to add the [source to the python path](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md#add-libraries-to-pythonpath).
+ 
+For Unix, it should be something like
 
+```bash
+# From tensorflow/models/research/
+export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
+```
 
-## Dataset
+For Windows (in Powershell):
+
+```powershell
+$pathToGitRoot = "[GIT_ROOT]"
+$pathToSourceRoot = "$($pathToGitRoot)/object_detection"
+$env:PYTHONPATH = "$($pathToGitRoot);$($pathToSourceRoot);$($pathToGitRoot)/slim"
+```
+
+## Install pycocotools
+
+Taken from [here](https://github.com/matterport/Mask_RCNN/issues/6#issuecomment-341503509), needed if coco evaluation metric wants to be used:
+
+- On Linux, run `pip install git+https://github.com/waleedka/cocoapi.git#egg=pycocotools&subdirectory=PythonAPI`
+
+- On Windows, run `pip install git+https://github.com/philferriere/cocoapi.git#egg=pycocotools^&subdirectory=PythonAPI`
+
+# Dataset
 If you are just interested in the dataset, the split and the annotations used in this project, you can run the following scripts to reproduce the dataset locally:
 
 ```
