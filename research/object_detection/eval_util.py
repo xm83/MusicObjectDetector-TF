@@ -68,7 +68,7 @@ def visualize_detection_results(result_dict,
                                 show_groundtruth=False,
                                 groundtruth_box_visualization_color='black',
                                 min_score_thresh=.5,
-                                max_num_predictions=20,
+                                max_num_predictions=1200,
                                 skip_scores=False,
                                 skip_labels=False,
                                 keep_image_id_for_visualization_export=False):
