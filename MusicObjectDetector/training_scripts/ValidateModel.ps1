@@ -5,34 +5,13 @@ $pathToData = "$($pathToSourceRoot)/data"
 #$pathToData = "\\MONSTI\MusicObjectDetector-TF_Results"
 cd $pathToGitRoot/research
 
+echo "Appending required paths to temporary PYTHONPATH"
+$env:PYTHONPATH = "$($pathToGitRoot);$($pathToSourceRoot);$($pathToGitRoot)/slim"
+
 ################################################################
 # Available configurations - uncomment the one to actually run #
 ################################################################
-# $configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering2"
-# $configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering2_rms"
-# $configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering2_rms_without_stafflines"
-# $configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering3"
-# $configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering3_rms"
-# $configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering4"
-# $configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering4_rms"
-# $configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_reduced_classes_dim_clust2_rms"
-# $configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_reduced_classes_dim_clust2_rms_without_stafflines"
-# $configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_rms"
-
-# $configuration = "faster_rcnn_resnet50_pretrained_dim_clust2_rms"
-# $configuration = "faster_rcnn_resnet50_pretrained_dim_clust2_rms_without_stafflines"
-# $configuration = "faster_rcnn_resnet50_pretrained_reduced_classes_dim_clust2_rms"
-# $configuration = "faster_rcnn_resnet50_pretrained_reduced_classes_dim_clust2_rms_without_stafflines"
-
-# $configuration = "rfcn_inception_resnet_v2_atrous_pretrained_dim_clust2_rms"
-# $configuration = "rfcn_inception_resnet_v2_atrous_pretrained_dim_clust2_rms_without_stafflines"
-# $configuration = "rfcn_resnet50_pretrained_dim_clust2_rms"
-# $configuration = "rfcn_resnet50_pretrained_dim_clust2_rms_without_stafflines"
-
-# $configuration = "ssd_inception_v2_300x600_pretrained_dim_clust2_rms"
-# $configuration = "ssd_inception_v2_300x600_pretrained_dim_clust2_rms_without_stafflines"
-# $configuration = "ssd_mobilenet_v1_300x600_pretrained_dim_clust2_rms"
-# $configuration = "ssd_mobilenet_v1_300x600_pretrained_dim_clust2_rms_without_stafflines"
+$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering_rms"
 
 
 Start-Transcript -path "$($pathToTranscript)/ValidateModel-$($configuration).txt" -append
