@@ -58,7 +58,7 @@ class DatasetSplitter:
         return training_sample_indices, validation_sample_indices, test_sample_indices
 
     def get_independent_training_validation_and_test_sample_indices(
-            self, validation_percentage=0.1, seed: int=0) -> (
+            self, validation_percentage=0.16, seed: int=0) -> (
                 List[int], List[int], List[int]):
         """
         Returns a reproducible set of sample indices from the entire dataset population following independent writer splitting
@@ -123,12 +123,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--source_directory",
         type=str,
-        default="data/muscima_pp_cropped_images_with_stafflines",
+        default="data/muscima_pp_images",
         help="The directory, where the images should be copied from")
     parser.add_argument(
         "--destination_directory",
         type=str,
-        default="data/training_validation_test_with_stafflines",
+        default="data/training_validation_test",
         help="The directory, where the images should be split into the three directories 'train', 'test' and 'validation'")
     parser.add_argument(
         "--independent_set",
