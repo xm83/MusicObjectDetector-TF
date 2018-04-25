@@ -6,7 +6,7 @@ $pathToData = "$($pathToSourceRoot)/data"
 cd $pathToGitRoot
 
 echo "Appending required paths to temporary PYTHONPATH"
-$env:PYTHONPATH = "$($pathToGitRoot);$($pathToGitRoot)/research/object_detection;$($pathToGitRoot)/research/slim;$($pathToSourceRoot)"
+$env:PYTHONPATH = "$($pathToGitRoot);$($pathToGitRoot)/research;$($pathToGitRoot)/research/slim;$($pathToSourceRoot)"
 
 ################################################################
 # Available configurations - uncomment the one to actually run #

@@ -86,8 +86,8 @@ FLAGS = flags.FLAGS
 
 def main(_):
     # Use the following lines to potentially restrict the training process to only 50% of the GPU V-RAM
-    # gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5)
-    # sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5)
+    sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
     assert FLAGS.train_dir, '`train_dir` is missing.'
     if FLAGS.task == 0: tf.gfile.MakeDirs(FLAGS.train_dir)
