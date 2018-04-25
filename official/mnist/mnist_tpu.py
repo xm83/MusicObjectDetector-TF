@@ -23,33 +23,30 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import tensorflow as tf  # pylint: disable=g-bad-import-order
+import tensorflow as tf
+import dataset
+import mnist
 
-from official.mnist import dataset
-from official.mnist import mnist
-
-# Cloud TPU Cluster Resolver flags
-tf.flags.DEFINE_string(
-    "tpu", default=None,
-    help="The Cloud TPU to use for training. This should be either the name "
-    "used when creating the Cloud TPU, or a grpc://ip.address.of.tpu:8470 "
-    "url.")
-tf.flags.DEFINE_string(
-    "tpu_zone", default=None,
-    help="[Optional] GCE zone where the Cloud TPU is located in. If not "
-    "specified, we will attempt to automatically detect the GCE project from "
-    "metadata.")
+# Cloud TPU Cluster Resolvers
 tf.flags.DEFINE_string(
     "gcp_project", default=None,
-    help="[Optional] Project name for the Cloud TPU-enabled project. If not "
-    "specified, we will attempt to automatically detect the GCE project from "
-    "metadata.")
+    help="Project name for the Cloud TPU-enabled project. If not specified, we "
+    "will attempt to automatically detect the GCE project from metadata.")
+tf.flags.DEFINE_string(
+    "tpu_zone", default=None,
+    help="GCE zone where the Cloud TPU is located in. If not specified, we "
+    "will attempt to automatically detect the GCE project from metadata.")
+tf.flags.DEFINE_string(
+    "tpu_name", default=None,
+    help="Name of the Cloud TPU for Cluster Resolvers. You must specify either "
+    "this flag or --master.")
 
-# Model specific parameters
+# Model specific paramenters
 tf.flags.DEFINE_string(
     "master", default=None,
     help="GRPC URL of the master (e.g. grpc://ip.address.of.tpu:8470). You "
-    "must specify either this flag or --tpu.")
+    "must specify either this flag or --tpu_name.")
+
 tf.flags.DEFINE_string("data_dir", "",
                        "Path to directory containing the MNIST dataset")
 tf.flags.DEFINE_string("model_dir", None, "Estimator model_dir")
@@ -77,8 +74,6 @@ def metric_fn(labels, logits):
 
 
 def model_fn(features, labels, mode, params):
-  """model_fn constructs the ML model used to predict handwritten digits."""
-
   del params
   if mode == tf.estimator.ModeKeys.PREDICT:
     raise RuntimeError("mode {} is not supported yet".format(mode))
@@ -86,7 +81,7 @@ def model_fn(features, labels, mode, params):
   if isinstance(image, dict):
     image = features["image"]
 
-  model = mnist.create_model("channels_last")
+  model = mnist.Model("channels_last")
   logits = model(image, training=(mode == tf.estimator.ModeKeys.TRAIN))
   loss = tf.losses.sparse_softmax_cross_entropy(labels=labels, logits=logits)
 
@@ -110,7 +105,6 @@ def model_fn(features, labels, mode, params):
 
 
 def train_input_fn(params):
-  """train_input_fn defines the input pipeline used for training."""
   batch_size = params["batch_size"]
   data_dir = params["data_dir"]
   # Retrieves the batch size for the current shard. The # of shards is
@@ -136,17 +130,18 @@ def main(argv):
   del argv  # Unused.
   tf.logging.set_verbosity(tf.logging.INFO)
 
-  if FLAGS.master is None and FLAGS.tpu is None:
-    raise RuntimeError('You must specify either --master or --tpu.')
+  if FLAGS.master is None and FLAGS.tpu_name is None:
+    raise RuntimeError("You must specify either --master or --tpu_name.")
+
   if FLAGS.master is not None:
-    if FLAGS.tpu is not None:
-      tf.logging.warn('Both --master and --tpu are set. Ignoring '
-                      '--tpu and using --master.')
+    if FLAGS.tpu_name is not None:
+      tf.logging.warn("Both --master and --tpu_name are set. Ignoring "
+                      "--tpu_name and using --master.")
     tpu_grpc_url = FLAGS.master
   else:
     tpu_cluster_resolver = (
         tf.contrib.cluster_resolver.TPUClusterResolver(
-            FLAGS.tpu,
+            tpu_names=[FLAGS.tpu_name],
             zone=FLAGS.tpu_zone,
             project=FLAGS.gcp_project))
     tpu_grpc_url = tpu_cluster_resolver.get_master()

@@ -19,7 +19,6 @@ from __future__ import print_function
 
 # Dependency imports
 
-from six.moves import xrange
 import tensorflow as tf
 K = tf.keras
 

@@ -55,7 +55,7 @@ def _download_and_clean_file(filename, url):
   tf.gfile.Remove(temp_file)
 
 
-def main(_):
+def main(unused_argv):
   if not tf.gfile.Exists(FLAGS.data_dir):
     tf.gfile.MkDir(FLAGS.data_dir)
 

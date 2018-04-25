@@ -20,7 +20,4 @@ message MultiscaleAnchorGenerator {
 
   // Number of intermediate scale each scale octave
   optional int32 scales_per_octave = 5 [default = 2];
-
-  // Whether to produce anchors in normalized coordinates.
-  optional bool normalize_coordinates = 6 [default = true];
 }
