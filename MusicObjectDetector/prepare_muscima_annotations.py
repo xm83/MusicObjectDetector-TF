@@ -141,7 +141,7 @@ if __name__ == "__main__":
                         "data/Annotations.csv",
                         "data/Annotations")
 
-    # Create statistics for how many instances of each class exist
-    annotations = pandas.read_csv("data/Annotations.csv")
-    classes = annotations[['class']].groupby('class').size().reset_index(name='counts')  # type: pandas.DataFrame
-    classes.to_csv("data/Class-Statistics.csv", header=True, index=False)
+    # # Create statistics for how many instances of each class exist
+    # annotations = pandas.read_csv("data/Annotations.csv")
+    # classes = annotations[['class']].groupby('class').size().reset_index(name='counts')  # type: pandas.DataFrame
+    # classes.to_csv("data/Class-Statistics.csv", header=True, index=False)
