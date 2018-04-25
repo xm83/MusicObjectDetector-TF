@@ -3,10 +3,10 @@ $pathToSourceRoot = "$($pathToGitRoot)/MusicObjectDetector"
 $pathToTranscript = "$($pathToSourceRoot)/Transcripts"
 $pathToData = "$($pathToSourceRoot)/data"
 #$pathToData = "\\MONSTI\MusicObjectDetector-TF_Results"
-cd $pathToGitRoot/research
+cd $pathToGitRoot
 
 echo "Appending required paths to temporary PYTHONPATH"
-$env:PYTHONPATH = "$($pathToGitRoot);$($pathToSourceRoot);$($pathToGitRoot)/slim"
+$env:PYTHONPATH = "$($pathToGitRoot);$($pathToGitRoot)/research;$($pathToGitRoot)/research/slim;$($pathToSourceRoot)"
 
 ################################################################
 # Available configurations - uncomment the one to actually run #
@@ -16,6 +16,6 @@ $configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_cl
 
 Start-Transcript -path "$($pathToTranscript)/ValidateModel-$($configuration).txt" -append
 echo "Validate with $($configuration) configuration"
-python object_detection/eval.py --logtostderr --pipeline_config_path="$($pathToSourceRoot)/configurations/$($configuration).config" --checkpoint_dir="$($pathToData)/checkpoints-$($configuration)-train" --eval_dir="$($pathToData)/checkpoints-$($configuration)-validate"
+python research/object_detection/eval.py --logtostderr --pipeline_config_path="$($pathToSourceRoot)/configurations/$($configuration).config" --checkpoint_dir="$($pathToData)/checkpoints-$($configuration)-train" --eval_dir="$($pathToData)/checkpoints-$($configuration)-validate"
 Stop-Transcript
 
