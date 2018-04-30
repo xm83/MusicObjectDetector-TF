@@ -11,7 +11,9 @@ $env:PYTHONPATH = "$($pathToGitRoot);$($pathToGitRoot)/research;$($pathToGitRoot
 ################################################################
 # Available configurations - uncomment the one to actually run #
 ################################################################
-$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering_rms"
+#$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering_rms"
+#$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering_rms_1200_proposals"
+$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering_rms_2000_proposals"
 
 
 Start-Transcript -path "$($pathToTranscript)/ValidateModel-$($configuration).txt" -append
