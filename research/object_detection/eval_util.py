@@ -47,6 +47,8 @@ def write_metrics(metrics, global_step, summary_dir):
         ])
         summary_writer.add_summary(summary, global_step)
         logging.info('%s: %f', key, metrics[key])
+        if "map" in str(key).lower():
+            print("{0}: {1}".format(key, metrics[key]))
     logging.info('Metrics written to tf summary.')
 
 def write_metrics_to_csv(metrics, summary_dir):
