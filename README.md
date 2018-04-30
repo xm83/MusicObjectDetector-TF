@@ -15,85 +15,37 @@ The detailed results for various combinations of object-detector, feature-extrac
 This repository contains several scripts that can be used independently of each other. 
 Before running them, make sure that you have the necessary requirements installed. 
 
-## Requirements
+## Install required libraries
 
 - Python 3.6
 - Tensorflow 1.7.0 (or optionally tensorflow-gpu 1.7.0)
+- pycocotools (more [infos](https://github.com/matterport/Mask_RCNN/issues/6#issuecomment-341503509))
+    - On Linux, run `pip install git+https://github.com/waleedka/cocoapi.git#egg=pycocotools&subdirectory=PythonAPI`
+    - On Windows, run `pip install git+https://github.com/philferriere/cocoapi.git#egg=pycocotools^&subdirectory=PythonAPI`
+- Some libraries, as specified in [requirements.txt](MusicObjectDetector/requirements.txt)
 
-For installing Tensorflow and Keras we recommend using [Anaconda](https://www.continuum.io/downloads) or 
-[Miniconda](https://conda.io/miniconda.html) as Python distribution (we did so for preparing Travis-CI and it worked).
+## Prepare this library on Linux
 
-To accelerate training even further, you can make use of your GPU, by installing tensorflow-gpu instead of tensorflow
-via pip (note that you can only have one of them) and the required Nvidia drivers. For Windows, we recommend the
-[excellent tutorial by Phil Ferriere](https://github.com/philferriere/dlwin). For Linux, we recommend using the
- official tutorials by [Tensorflow](https://www.tensorflow.org/install/) and [Keras](https://keras.io/#installation).
-
-### Linux
-
-See https://github.com/tensorflow/models for information 
-
-Build the required libraries:
-
-```commandline
-cd research
-protoc object_detection/protos/*.proto --python_out=.
-cd slim
-python setup.py install
-cd ..
-python setup.py install
-```
-
-### Windows
-
-Run `DownloadAndBuildProtocolBuffers.ps1` to automate this step or execute the steps described in the next section.
-
-#### Manual building
-
-First, make sure you have [protocol buffers](https://developers.google.com/protocol-buffers/docs/downloads) installed, by heading over to [the download page](https://github.com/google/protobuf/releases/download/v3.4.0/) and download the version 3.4.0 (note that [3.5.0 does not work](https://github.com/google/protobuf/issues/3957)). Extract and copy the protoc.exe to a place, where you can run it from later on.  
+Build the required protobuf files:
 
 ```commandline
 cd research
 protoc object_detection/protos/*.proto --python_out=.
 ```
 
-Install the python packages
+## Prepare this library on Windows
+
+Run `DownloadAndBuildProtocolBuffers.ps1` to automate this step or manually build the protobufs by first installing [protocol buffers](https://developers.google.com/protocol-buffers/docs/downloads) and then run:
+
 ```commandline
-cd slim
-python setup.py install
-cd ..
-python setup.py install
+cd research
+protoc object_detection/protos/*.proto --python_out=.
 ```
 
-> If you get the exception `error: could not create 'build': Cannot create a file when that file already exists` here, delete the `BUILD` file inside first
-
-## Append library to python path
-Execute these steps in the shell that runs the training/inference to add the [source to the python path](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md#add-libraries-to-pythonpath).
- 
-For Unix, it should be something like
-
-```bash
-# From tensorflow/models/research/
-export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
-```
-
-For Windows (in Powershell):
-
-```powershell
-$pathToGitRoot = "[GIT_ROOT]"
-$pathToSourceRoot = "$($pathToGitRoot)/object_detection"
-$env:PYTHONPATH = "$($pathToGitRoot);$($pathToSourceRoot);$($pathToGitRoot)/slim"
-```
-
-## Install pycocotools
-
-Taken from [here](https://github.com/matterport/Mask_RCNN/issues/6#issuecomment-341503509), needed if coco evaluation metric wants to be used:
-
-- On Linux, run `pip install git+https://github.com/waleedka/cocoapi.git#egg=pycocotools&subdirectory=PythonAPI`
-
-- On Windows, run `pip install git+https://github.com/philferriere/cocoapi.git#egg=pycocotools^&subdirectory=PythonAPI`
+> Note, that you have to use [version 3.4.0](https://github.com/google/protobuf/releases/download/v3.4.0/) because of a [bug in 3.5.0](https://github.com/google/protobuf/issues/3957)
 
 # Dataset
-If you are just interested in the dataset, the split and the annotations used in this project, you can run the following scripts to reproduce the dataset locally:
+Run the following scripts to reproduce the dataset locally:
 
 ```
 # cd into MusicObjectDetector folder
@@ -132,6 +84,24 @@ python create_muscima_tf_record.py --data_dir=data/training_validation_test_with
  ```
  
 ## Running the training
+
+### Adding source to Python path
+Make sure you have all required folders appended to the [Python path](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md#add-libraries-to-pythonpath)
+
+For Linux:
+```bash
+# From tensorflow/models/research/
+export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
+```
+
+For Windows (Powershell):
+```powershell
+$pathToGitRoot = "[GIT_ROOT]"
+$pathToSourceRoot = "$($pathToGitRoot)/object_detection"
+$env:PYTHONPATH = "$($pathToGitRoot);$($pathToSourceRoot);$($pathToGitRoot)/slim"
+```
+
+### Adjusting paths
 For running the training, you need to change the paths, according to your system
 
 - in the configuration, you want to run, e.g. `configurations/faster_rcnn_inception_resnet_v2_atrous_muscima_pretrained_reduced_classes.config`
@@ -148,6 +118,8 @@ python [GIT_ROOT]/research/object_detection/eval.py --logtostderr --pipeline_con
 ```
 
 A few remarks: The two scripts can and should be run at the same time, to get a live evaluation during the training. The values, may be visualized by calling `tensorboard --logdir=[GIT_ROOT]/MusicObjectDetector/data`.
+
+### Restricting GPU memory usage
 
 Notice that usually Tensorflow allocates the entire memory of your graphics card for the training. In order to run both training and validation at the same time, you might have to restrict Tensorflow from doing so, by opening `train.py` and `eval.py` and uncomment the respective (prepared) lines in the main function. E.g.:
 
