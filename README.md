@@ -49,7 +49,8 @@ Run the following scripts to reproduce the dataset locally:
 
 ```
 # cd into MusicObjectDetector folder
-python muscima_image_cutter.py
+python download_muscima_dataset.py
+python prepare_muscima_annotations.py
 python DatasetSplitter.py --source_directory=data/muscima_pp_cropped_images_with_stafflines --destination_directory=data/training_validation_test_with_stafflines
 python DatasetSplitter.py --source_directory=data/muscima_pp_cropped_images_without_stafflines --destination_directory=data/training_validation_test_without_stafflines
 ```

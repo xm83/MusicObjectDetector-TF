@@ -4,7 +4,6 @@ import shutil
 from glob import glob
 from typing import List
 
-import pandas
 from PIL import Image
 from lxml import etree
 from lxml.etree import Element, SubElement
@@ -99,7 +98,7 @@ def prepare_annotations(muscima_image_directory: str,
         image_path = None
         for path in image_paths:
             result = re.match(r".*(?P<writer>w-\d+).*(?P<page>p\d+).png", path)
-            if ("w-"+writer) == result.group("writer") and ('p' + page.zfill(3)) == result.group("page"):
+            if ("w-" + writer) == result.group("writer") and ('p' + page.zfill(3)) == result.group("page"):
                 image_path = path
                 break
 
@@ -119,29 +118,9 @@ def prepare_annotations(muscima_image_directory: str,
 if __name__ == "__main__":
     dataset_directory = "data"
     muscima_pp_raw_dataset_directory = os.path.join(dataset_directory, "muscima_pp_raw")
-    muscima_image_directory = os.path.join(dataset_directory, "cvcmuscima_staff_removal")
-
-    # print("Deleting dataset directory {0}".format(dataset_directory))
-    # if os.path.exists(dataset_directory):
-    #     shutil.rmtree(dataset_directory, ignore_errors=True)
-    #
-    # downloader = MuscimaPlusPlusDatasetDownloader(muscima_pp_raw_dataset_directory)
-    # downloader.download_and_extract_dataset()
-    #
-    # downloader = CvcMuscimaDatasetDownloader(muscima_image_directory, CvcMuscimaDataset.StaffRemoval)
-    # downloader.download_and_extract_dataset()
-    #
-    # inverter = ImageInverter()
-    # # We would like to work with black-on-white images instead of white-on-black images
-    # inverter.invert_images(muscima_image_directory, "*.png")
 
     prepare_annotations("data/cvcmuscima_staff_removal/*/ideal/*/image/*.png",
                         "data/muscima_pp_images",
                         muscima_pp_raw_dataset_directory,
                         "data/Annotations.csv",
                         "data/Annotations")
-
-    # # Create statistics for how many instances of each class exist
-    # annotations = pandas.read_csv("data/Annotations.csv")
-    # classes = annotations[['class']].groupby('class').size().reset_index(name='counts')  # type: pandas.DataFrame
-    # classes.to_csv("data/Class-Statistics.csv", header=True, index=False)
