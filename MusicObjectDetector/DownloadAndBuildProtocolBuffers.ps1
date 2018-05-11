@@ -28,10 +28,6 @@ Unzip $output $protoc_folder
 
 cd ..\research
 ..\MusicObjectDetector\Protoc\bin\protoc.exe object_detection/protos/*.proto --python_out=.
-cd slim
-python setup.py install
-cd ..
-python setup.py install
 
 rm ..\MusicObjectDetector\Protoc -Recurse
 rm ..\MusicObjectDetector\protoc-3.4.0-win32.zip
