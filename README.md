@@ -67,9 +67,9 @@ python create_muscima_tf_record.py --data_dir=data/training_validation_test_with
 
  By providing a different mapping, you can reduce the classes, you want to be able to detect, e.g. `mapping_71_classes.txt`:
  
-## Running the training
+# Running the training
 
-### Adding source to Python path
+## Adding source to Python path
 Make sure you have all required folders appended to the [Python path](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md#add-libraries-to-pythonpath)
 
 For Linux:
@@ -85,7 +85,7 @@ $pathToSourceRoot = "$($pathToGitRoot)/object_detection"
 $env:PYTHONPATH = "$($pathToGitRoot);$($pathToSourceRoot);$($pathToGitRoot)/slim"
 ```
 
-### Adjusting paths
+## Adjusting paths
 For running the training, you need to change the paths, according to your system
 
 - in the configuration, you want to run, e.g. `configurations/faster_rcnn_inception_resnet_v2_atrous_muscima_pretrained_reduced_classes.config`
@@ -103,7 +103,7 @@ python [GIT_ROOT]/research/object_detection/eval.py --logtostderr --pipeline_con
 
 A few remarks: The two scripts can and should be run at the same time, to get a live evaluation during the training. The values, may be visualized by calling `tensorboard --logdir=[GIT_ROOT]/MusicObjectDetector/data`.
 
-### Restricting GPU memory usage
+## Restricting GPU memory usage
 
 Notice that usually Tensorflow allocates the entire memory of your graphics card for the training. In order to run both training and validation at the same time, you might have to restrict Tensorflow from doing so, by opening `train.py` and `eval.py` and uncomment the respective (prepared) lines in the main function. E.g.:
 
@@ -112,7 +112,7 @@ gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.3)
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 ```
 
-### Training with pre-trained weights
+## Training with pre-trained weights
 
 It is recommended that you use pre-trained weights for known networks to speed up training and improve overall results. To do so, head over to the [Tensorflow detection model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md), download and unzip the respective trained model, e.g. `faster_rcnn_inception_resnet_v2_atrous_coco` for reproducing the best results, we obtained. The path to the unzipped files, must be specified inside of the configuration in the `train_config`-section, e.g.
 
@@ -125,7 +125,7 @@ train-config: {
 
 > Note that inside that folder, there is no actual file, called `model.ckpt`, but multiple files called `model.ckpt.[something]`.
 
-# Dimension clustering
+## Dimension clustering
 
 For optimizing the performance of the detector, we adopted the dimensions clustering algorithm, proposed in the [YOLO 9000 paper](https://arxiv.org/abs/1612.08242).
 While preparing the dataset, the `muscima_image_cutter.py` script created a file called `Annotations.csv` and a folder called `Annotations`. 
@@ -141,6 +141,37 @@ The first script will load all annotations and create four csv-files containing 
 from all images, including their relative sizes, compared to the entire image.
 The second script loads those statistics and performs dimension clustering, use a k-means algorithm on the relative 
 dimensions of annotations.   
+
+# Preparing for inference
+
+Preparing the model is described [here](research/object_detection/g3doc/exporting_models.md). Basically, you just run `export_inference_graph.py` with appropriate arguments or `freeze_model.ps1` after setting the paths accordingly.
+
+## Running inference
+Unless you have trained the network for yourself, first download the [pre-trained model for the full-page detection](https://owncloud.tuwien.ac.at/index.php/s/5J1c8yhnVXB6Sm2/download). 
+
+Perform inference on a single image by running
+
+```bash
+# From [GIT_ROOT]/MusicObjectDetection
+python inference_over_image.py \
+    --inference_graph ${frozen_inference_graph.pb} \
+    --label_map mapping.txt \
+    --input_image ${IMAGE_TO_BE_CLASSIFIED} \
+    --output_image image_with_detection.jpg
+```
+
+or for an entire directory of images by running
+
+```bash
+# From [GIT_ROOT]/MusicObjectDetection
+python inference_over_directory.py \
+    --inference_graph ${frozen_inference_graph.pb} \ 
+    --label_map mapping.txt \
+    --input_directory ${DIRECTORY_TO_IMAGES} \
+    --output_directory ${OUTPUT_DIRECTORY}
+```
+
+
 
 # License
 
