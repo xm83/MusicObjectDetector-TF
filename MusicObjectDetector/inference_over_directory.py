@@ -7,7 +7,7 @@ from PIL import Image
 from tqdm import tqdm
 import pickle
 
-import object_detection.inference_over_image as inference_over_image
+import inference_over_image
 from object_detection.utils import ops as utils_ops, label_map_util, visualization_utils as vis_util
 
 if tf.__version__ < '1.4.0':

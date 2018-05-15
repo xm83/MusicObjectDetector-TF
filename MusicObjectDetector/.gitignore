@@ -7,3 +7,4 @@ old_data
 Transcripts
 *.tar.gz
 /Transcript.txt
+/detection_output/
