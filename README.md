@@ -12,6 +12,8 @@ The detailed results for various combinations of object-detector, feature-extrac
 
 If you are interested in previous work, presented at the [DAS 2018](https://das2018.cvl.tuwien.ac.at/en/) on cropped images like these, please refer to the [corresponding release](https://github.com/apacha/MusicObjectDetector-TF/releases/tag/crop-images-detection)
 
+| Original Image | Detection results as training progresses |
+|:--------------:|:------------------:|
 | ![Original image](MusicObjectDetector/images/crop_undetected.png) | ![Image with detected objects](MusicObjectDetector/images/individualImage1-animation.gif) |
 
 # Preparing the application
