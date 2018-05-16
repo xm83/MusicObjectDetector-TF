@@ -2,14 +2,17 @@
 
 This is the repository for the fast and reliable Music Symbol detector with Deep Learning, based on the Tensorflow Object Detection API: 
  
-| Original Image | Detection results as training progresses |
-|:--------------:|:------------------:|
-| ![Original image](MusicObjectDetector/images/crop_undetected.png) | ![Image with detected objects](MusicObjectDetector/images/individualImage1-animation.gif) |
-| ![Original image](MusicObjectDetector/images/individualImage3-0.jpg)      | ![Image with detected objects](MusicObjectDetector/images/individualImage3-animated.gif)      |
-| ![Original image](MusicObjectDetector/images/individualImage2-0.jpg)      | ![Image with detected objects](MusicObjectDetector/images/individualImage2-animated.gif)      |
+ ![](MusicObjectDetector/images/full-page-detection_animated.gif)
+
+The reasoning behind this repository can be found in [this scientific article](https://alexanderpacha.files.wordpress.com/2018/05/handwritten-music-object-detection.pdf).
 
 The detailed results for various combinations of object-detector, feature-extractor, etc. can be found in [this spreadsheet](https://docs.google.com/spreadsheets/d/174-CnLO-rAoVMst0ngVGHguTlD39ebdxLX9ZLE9Pscw/edit?usp=sharing).
 
+## Music object detection in image crops
+
+If you are interested in previous work, presented at the [DAS 2018](https://das2018.cvl.tuwien.ac.at/en/) on cropped images like these, please refer to the [corresponding release](https://github.com/apacha/MusicObjectDetector-TF/releases/tag/crop-images-detection)
+
+| ![Original image](MusicObjectDetector/images/crop_undetected.png) | ![Image with detected objects](MusicObjectDetector/images/individualImage1-animation.gif) |
 
 # Preparing the application
 This repository contains several scripts that can be used independently of each other. 
@@ -142,14 +145,17 @@ from all images, including their relative sizes, compared to the entire image.
 The second script loads those statistics and performs dimension clustering, use a k-means algorithm on the relative 
 dimensions of annotations.   
 
-# Preparing for inference
+# Inference
 
-Preparing the model is described [here](research/object_detection/g3doc/exporting_models.md). Basically, you just run `export_inference_graph.py` with appropriate arguments or `freeze_model.ps1` after setting the paths accordingly.
+## Standalone inference
 
-## Running inference
-Unless you have trained the network for yourself, first download the [pre-trained model for the full-page detection](https://owncloud.tuwien.ac.at/index.php/s/5J1c8yhnVXB6Sm2/download). 
+We recommend to check out the [demo](MusicObjectDetector/demo) folder first, which provides a self-contained script for performing  object detection and does not depend on this library. It comes with a pre-trained model for convenience and a simple text output for interoperability with other applications.
 
-Perform inference on a single image by running
+## Inference from within this library
+If you have trained a model by yourself, [this document](research/object_detection/g3doc/exporting_models.md) describes how to prepare it. Basically, you just run `export_inference_graph.py` with appropriate arguments or `freeze_model.ps1` after setting the paths accordingly. Alternatively, a pre-trained model can be download from here: [2018-05-15_faster-rcnn_inception-resnet-v2_2000-proposals_full-page-detection_muscima-pp.pb](https://owncloud.tuwien.ac.at/index.php/s/5J1c8yhnVXB6Sm2/download). 
+
+
+Once you have the frozen model, you can perform inference on a single image by running
 
 ```bash
 # From [GIT_ROOT]/MusicObjectDetection
@@ -170,8 +176,6 @@ python inference_over_directory.py \
     --input_directory ${DIRECTORY_TO_IMAGES} \
     --output_directory ${OUTPUT_DIRECTORY}
 ```
-
-
 
 # License
 
