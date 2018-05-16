@@ -18,46 +18,44 @@ Before running them, make sure that you have the necessary requirements installe
 ## Install required libraries
 
 - Python 3.6
-- Tensorflow 1.7.0 (or optionally tensorflow-gpu 1.7.0)
+- Tensorflow 1.8.0 (or optionally tensorflow-gpu 1.8.0)
 - pycocotools (more [infos](https://github.com/matterport/Mask_RCNN/issues/6#issuecomment-341503509))
     - On Linux, run `pip install git+https://github.com/waleedka/cocoapi.git#egg=pycocotools&subdirectory=PythonAPI`
     - On Windows, run `pip install git+https://github.com/philferriere/cocoapi.git#egg=pycocotools^&subdirectory=PythonAPI`
 - Some libraries, as specified in [requirements.txt](MusicObjectDetector/requirements.txt)
 
-## Prepare this library on Linux
-
-Build the required protobuf files:
+## Build Protobuf files on Linux
 
 ```commandline
 cd research
 protoc object_detection/protos/*.proto --python_out=.
 ```
 
-## Prepare this library on Windows
+## Build Protobuf files on Windows
 
-Run `DownloadAndBuildProtocolBuffers.ps1` to automate this step or manually build the protobufs by first installing [protocol buffers](https://developers.google.com/protocol-buffers/docs/downloads) and then run:
+> Run [`DownloadAndBuildProtocolBuffers.ps1`](MusicObjectDetector/DownloadAndBuildProtocolBuffers.ps1) to automate this step or manually build the protobufs by first installing [protocol buffers](https://developers.google.com/protocol-buffers/docs/downloads) and then run:
 
 ```commandline
 cd research
 protoc object_detection/protos/*.proto --python_out=.
 ```
 
-> Note, that you have to use [version 3.4.0](https://github.com/google/protobuf/releases/download/v3.4.0/) because of a [bug in 3.5.0](https://github.com/google/protobuf/issues/3957)
+Note, that you have to use [version 3.4.0](https://github.com/google/protobuf/releases/download/v3.4.0/) because of a [bug in 3.5.0 and 3.5.1](https://github.com/google/protobuf/issues/3957)
 
 # Dataset
+
+> Run [`PrepareDatasetsForTensorflow.ps1`](MusicObjectDetector/PrepareDatasetsForTensorflow.ps1) to automate this step on Windows or manually prepare the datasets with the following steps (on Linux).
+
 Run the following scripts to reproduce the dataset locally:
 
 ```
 # cd into MusicObjectDetector folder
-python muscima_image_cutter.py
-python DatasetSplitter.py --source_directory=data/muscima_pp_cropped_images_with_stafflines --destination_directory=data/training_validation_test_with_stafflines
-python DatasetSplitter.py --source_directory=data/muscima_pp_cropped_images_without_stafflines --destination_directory=data/training_validation_test_without_stafflines
+python download_muscima_dataset.py
+python prepare_muscima_annotations.py
+python dataset_splitter.py --source_directory=data/muscima_pp_cropped_images_with_stafflines --destination_directory=data/training_validation_test_with_stafflines
 ```
   
-These scripts will download the datasets automatically, generate cropped images along an Annotation.csv file and split the images into three reproducible parts for training, validation and test. 
-
-Images will be cropped first vertically along the staffs and then horizontally (red boxes) like this (with orange regions overlapping between two regions):
-![Cropping of images](MusicObjectDetector/images/w-05_p006_crop_regions.png) 
+These scripts will download the datasets automatically, prepare the annotations and split the images into three reproducible parts for training, validation and test. 
 
 Now you can create the Tensorflow Records that are required for actually running the training.
 
@@ -65,27 +63,13 @@ Now you can create the Tensorflow Records that are required for actually running
 python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=training --annotations_dir=Annotations --output_path=data/all_classes_with_staff_lines_writer_independent_split/training.record --label_map_path=mapping_all_classes.txt
 python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=validation --annotations_dir=Annotations --output_path=data/all_classes_with_staff_lines_writer_independent_split/validation.record --label_map_path=mapping_all_classes.txt
 python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=test --annotations_dir=Annotations --output_path=data/all_classes_with_staff_lines_writer_independent_split/test.record --label_map_path=mapping_all_classes.txt
-
-python create_muscima_tf_record.py --data_dir=data/training_validation_test_without_stafflines --set=training --annotations_dir=Annotations --output_path=data/all_classes_without_staff_lines_writer_independent_split/training.record --label_map_path=mapping_all_classes.txt
-python create_muscima_tf_record.py --data_dir=data/training_validation_test_without_stafflines --set=validation --annotations_dir=Annotations --output_path=data/all_classes_without_staff_lines_writer_independent_split/validation.record --label_map_path=mapping_all_classes.txt
-python create_muscima_tf_record.py --data_dir=data/training_validation_test_without_stafflines --set=test --annotations_dir=Annotations --output_path=data/all_classes_without_staff_lines_writer_independent_split/test.record --label_map_path=mapping_all_classes.txt
 ```
 
- If you want to use only a reduced number of classes, you can provide other mappings like `mapping_71_classes.txt`:
+ By providing a different mapping, you can reduce the classes, you want to be able to detect, e.g. `mapping_71_classes.txt`:
  
- ```
- python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=training --annotations_dir=Annotations --output_path=data/71_classes_with_staff_lines_writer_independent_split/training.record --label_map_path=mapping_71_classes.txt
- python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=validation --annotations_dir=Annotations --output_path=data/71_classes_with_staff_lines_writer_independent_split/validation.record --label_map_path=mapping_71_classes.txt
- python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=test --annotations_dir=Annotations --output_path=data/71_classes_with_staff_lines_writer_independent_split/test.record --label_map_path=mapping_71_classes.txt
- 
- python create_muscima_tf_record.py --data_dir=data/training_validation_test_without_stafflines --set=training --annotations_dir=Annotations --output_path=data/71_classes_without_staff_lines_writer_independent_split/training.record --label_map_path=mapping_71_classes.txt
- python create_muscima_tf_record.py --data_dir=data/training_validation_test_without_stafflines --set=validation --annotations_dir=Annotations --output_path=data/71_classes_without_staff_lines_writer_independent_split/validation.record --label_map_path=mapping_71_classes.txt
- python create_muscima_tf_record.py --data_dir=data/training_validation_test_without_stafflines --set=test --annotations_dir=Annotations --output_path=data/71_classes_without_staff_lines_writer_independent_split/test.record --label_map_path=mapping_71_classes.txt
- ```
- 
-## Running the training
+# Running the training
 
-### Adding source to Python path
+## Adding source to Python path
 Make sure you have all required folders appended to the [Python path](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md#add-libraries-to-pythonpath)
 
 For Linux:
@@ -101,7 +85,7 @@ $pathToSourceRoot = "$($pathToGitRoot)/object_detection"
 $env:PYTHONPATH = "$($pathToGitRoot);$($pathToSourceRoot);$($pathToGitRoot)/slim"
 ```
 
-### Adjusting paths
+## Adjusting paths
 For running the training, you need to change the paths, according to your system
 
 - in the configuration, you want to run, e.g. `configurations/faster_rcnn_inception_resnet_v2_atrous_muscima_pretrained_reduced_classes.config`
@@ -119,7 +103,7 @@ python [GIT_ROOT]/research/object_detection/eval.py --logtostderr --pipeline_con
 
 A few remarks: The two scripts can and should be run at the same time, to get a live evaluation during the training. The values, may be visualized by calling `tensorboard --logdir=[GIT_ROOT]/MusicObjectDetector/data`.
 
-### Restricting GPU memory usage
+## Restricting GPU memory usage
 
 Notice that usually Tensorflow allocates the entire memory of your graphics card for the training. In order to run both training and validation at the same time, you might have to restrict Tensorflow from doing so, by opening `train.py` and `eval.py` and uncomment the respective (prepared) lines in the main function. E.g.:
 
@@ -128,7 +112,7 @@ gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.3)
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 ```
 
-### Training with pre-trained weights
+## Training with pre-trained weights
 
 It is recommended that you use pre-trained weights for known networks to speed up training and improve overall results. To do so, head over to the [Tensorflow detection model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md), download and unzip the respective trained model, e.g. `faster_rcnn_inception_resnet_v2_atrous_coco` for reproducing the best results, we obtained. The path to the unzipped files, must be specified inside of the configuration in the `train_config`-section, e.g.
 
@@ -141,7 +125,7 @@ train-config: {
 
 > Note that inside that folder, there is no actual file, called `model.ckpt`, but multiple files called `model.ckpt.[something]`.
 
-# Dimension clustering
+## Dimension clustering
 
 For optimizing the performance of the detector, we adopted the dimensions clustering algorithm, proposed in the [YOLO 9000 paper](https://arxiv.org/abs/1612.08242).
 While preparing the dataset, the `muscima_image_cutter.py` script created a file called `Annotations.csv` and a folder called `Annotations`. 
@@ -157,6 +141,37 @@ The first script will load all annotations and create four csv-files containing 
 from all images, including their relative sizes, compared to the entire image.
 The second script loads those statistics and performs dimension clustering, use a k-means algorithm on the relative 
 dimensions of annotations.   
+
+# Preparing for inference
+
+Preparing the model is described [here](research/object_detection/g3doc/exporting_models.md). Basically, you just run `export_inference_graph.py` with appropriate arguments or `freeze_model.ps1` after setting the paths accordingly.
+
+## Running inference
+Unless you have trained the network for yourself, first download the [pre-trained model for the full-page detection](https://owncloud.tuwien.ac.at/index.php/s/5J1c8yhnVXB6Sm2/download). 
+
+Perform inference on a single image by running
+
+```bash
+# From [GIT_ROOT]/MusicObjectDetection
+python inference_over_image.py \
+    --inference_graph ${frozen_inference_graph.pb} \
+    --label_map mapping.txt \
+    --input_image ${IMAGE_TO_BE_CLASSIFIED} \
+    --output_image image_with_detection.jpg
+```
+
+or for an entire directory of images by running
+
+```bash
+# From [GIT_ROOT]/MusicObjectDetection
+python inference_over_directory.py \
+    --inference_graph ${frozen_inference_graph.pb} \ 
+    --label_map mapping.txt \
+    --input_directory ${DIRECTORY_TO_IMAGES} \
+    --output_directory ${OUTPUT_DIRECTORY}
+```
+
+
 
 # License
 

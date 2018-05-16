@@ -178,12 +178,26 @@ class Model(object):
 
     self.x, self.y = self.get_xy_placeholders()
 
-    # This context creates variables
     with tf.variable_scope('core', reuse=None):
       self.loss, self.gradient_ops = self.train(self.x, self.y)
-    # And this one re-uses them (thus the `reuse=True`)
     with tf.variable_scope('core', reuse=True):
       self.y_preds = self.eval(self.x, self.y)
+
+    # setup memory "reset" ops
+    (self.mem_keys, self.mem_vals,
+     self.mem_age, self.recent_idx) = self.memory.get()
+    self.mem_keys_reset = tf.placeholder(self.mem_keys.dtype,
+                                         tf.identity(self.mem_keys).shape)
+    self.mem_vals_reset = tf.placeholder(self.mem_vals.dtype,
+                                         tf.identity(self.mem_vals).shape)
+    self.mem_age_reset = tf.placeholder(self.mem_age.dtype,
+                                        tf.identity(self.mem_age).shape)
+    self.recent_idx_reset = tf.placeholder(self.recent_idx.dtype,
+                                           tf.identity(self.recent_idx).shape)
+    self.mem_reset_op = self.memory.set(self.mem_keys_reset,
+                                        self.mem_vals_reset,
+                                        self.mem_age_reset,
+                                        None)
 
   def training_ops(self, loss):
     opt = self.get_optimizer()
@@ -240,14 +254,8 @@ class Model(object):
       Predicted y.
     """
 
-    # Storing current memory state to restore it after prediction
-    mem_keys, mem_vals, mem_age, _ = self.memory.get()
-    cur_memory = (
-        tf.identity(mem_keys),
-        tf.identity(mem_vals),
-        tf.identity(mem_age),
-        None,
-    )
+    cur_memory = sess.run([self.mem_keys, self.mem_vals,
+                           self.mem_age])
 
     outputs = [self.y_preds]
     if y is None:
@@ -255,8 +263,10 @@ class Model(object):
     else:
       ret = sess.run(outputs, feed_dict={self.x: x, self.y: y})
 
-    # Restoring memory state
-    self.memory.set(*cur_memory)
+    sess.run([self.mem_reset_op],
+             feed_dict={self.mem_keys_reset: cur_memory[0],
+                        self.mem_vals_reset: cur_memory[1],
+                        self.mem_age_reset: cur_memory[2]})
 
     return ret
 
@@ -274,14 +284,8 @@ class Model(object):
       List of predicted y.
     """
 
-    # Storing current memory state to restore it after prediction
-    mem_keys, mem_vals, mem_age, _ = self.memory.get()
-    cur_memory = (
-        tf.identity(mem_keys),
-        tf.identity(mem_vals),
-        tf.identity(mem_age),
-        None,
-    )
+    cur_memory = sess.run([self.mem_keys, self.mem_vals,
+                           self.mem_age])
 
     if clear_memory:
       self.clear_memory(sess)
@@ -293,8 +297,10 @@ class Model(object):
       y_pred = out[0]
       y_preds.append(y_pred)
 
-    # Restoring memory state
-    self.memory.set(*cur_memory)
+    sess.run([self.mem_reset_op],
+             feed_dict={self.mem_keys_reset: cur_memory[0],
+                        self.mem_vals_reset: cur_memory[1],
+                        self.mem_age_reset: cur_memory[2]})
 
     return y_preds
 

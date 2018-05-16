@@ -6,4 +6,5 @@ Protoc
 old_data
 Transcripts
 *.tar.gz
-/dimension_clustering/
+/Transcript.txt
+/detection_output/

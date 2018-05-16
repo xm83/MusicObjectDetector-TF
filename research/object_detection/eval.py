@@ -90,8 +90,8 @@ def main(unused_argv):
     # os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
     # Use the following lines to restrict this process to only 30% of the GPU VRAM
-    # gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.3)
-    # sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.35)
+    sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
     assert FLAGS.checkpoint_dir, '`checkpoint_dir` is missing.'
     assert FLAGS.eval_dir, '`eval_dir` is missing.'

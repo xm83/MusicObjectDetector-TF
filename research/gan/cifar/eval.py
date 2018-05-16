@@ -63,8 +63,6 @@ flags.DEFINE_integer('max_number_of_evaluations', None,
                      'Number of times to run evaluation. If `None`, run '
                      'forever.')
 
-flags.DEFINE_boolean('write_to_disk', True, 'If `True`, run images to disk.')
-
 
 def main(_, run_eval_loop=True):
   # Fetch and generate images to run through Inception.
@@ -99,7 +97,7 @@ def main(_, run_eval_loop=True):
 
   # Create ops that write images to disk.
   image_write_ops = None
-  if FLAGS.conditional_eval and FLAGS.write_to_disk:
+  if FLAGS.conditional_eval:
     reshaped_imgs = util.get_image_grid(
         generated_data, FLAGS.num_images_generated, num_classes,
         FLAGS.num_images_per_class)
@@ -108,7 +106,7 @@ def main(_, run_eval_loop=True):
         '%s/%s'% (FLAGS.eval_dir, 'conditional_cifar10.png'),
         tf.image.encode_png(uint8_images[0]))
   else:
-    if FLAGS.num_images_generated >= 100 and FLAGS.write_to_disk:
+    if FLAGS.num_images_generated >= 100:
       reshaped_imgs = tfgan.eval.image_reshaper(
           generated_data[:100], num_cols=FLAGS.num_images_per_class)
       uint8_images = data_provider.float_image_to_uint8(reshaped_imgs)
@@ -149,7 +147,7 @@ def _get_generated_data(num_images_generated, conditional_eval, num_classes):
   # In order for variables to load, use the same variable scope as in the
   # train job.
   with tf.variable_scope('Generator'):
-    data = generator_fn(generator_inputs, is_training=False)
+    data = generator_fn(generator_inputs)
 
   return data
 
