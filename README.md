@@ -4,7 +4,9 @@ This is the repository for the fast and reliable Music Symbol detector with Deep
  
  ![](MusicObjectDetector/images/full-page-detection_animated.gif)
 
-The reasoning behind this repository can be found in [this scientific article](https://alexanderpacha.files.wordpress.com/2018/05/handwritten-music-object-detection.pdf).
+If you want to try out the full-page detection on your own images, you can try it online in the [DIVAServices Spotlight](http://divaservices.unifr.ch/spotlight).
+
+The scientific reasoning behind this repository can be found in [this scientific article](https://alexanderpacha.files.wordpress.com/2018/05/handwritten-music-object-detection.pdf).
 
 The detailed results for various combinations of object-detector, feature-extractor, etc. can be found in [this spreadsheet](https://docs.google.com/spreadsheets/d/174-CnLO-rAoVMst0ngVGHguTlD39ebdxLX9ZLE9Pscw/edit?usp=sharing).
 
