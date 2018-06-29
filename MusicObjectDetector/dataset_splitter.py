@@ -35,31 +35,9 @@ class DatasetSplitter:
         self.destination_directory = os.path.abspath(destination_directory)
         self.independent_set = independent_set
 
-    def get_random_training_validation_and_test_sample_indices(self,
-                                                               dataset_size: int,
-                                                               validation_percentage: float = 0.1,
-                                                               test_percentage: float = 0.1,
-                                                               seed: int = 0) -> (List[int], List[int], List[int]):
-        """
-        Returns a reproducible set of random sample indices from the entire dataset population
-        :param dataset_size: The population size
-        :param validation_percentage: the percentage of the entire population size that should be used for validation
-        :param test_percentage: the percentage of the entire population size that should be used for testing
-        :param seed: An arbitrary seed that can be used to obtain repeatable pseudo-random indices
-        :return: A triple of three list, containing indices of the training, validation and test sets
-        """
-        random.seed(seed)
-        all_indices = range(0, dataset_size)
-        validation_sample_size = int(dataset_size * validation_percentage)
-        test_sample_size = int(dataset_size * test_percentage)
-        validation_sample_indices = random.sample(all_indices, validation_sample_size)
-        test_sample_indices = random.sample((set(all_indices) - set(validation_sample_indices)), test_sample_size)
-        training_sample_indices = list(set(all_indices) - set(validation_sample_indices) - set(test_sample_indices))
-        return training_sample_indices, validation_sample_indices, test_sample_indices
-
     def get_independent_training_validation_and_test_sample_indices(
-            self, validation_percentage=0.16, seed: int=0) -> (
-                List[int], List[int], List[int]):
+            self, validation_percentage=0.16, seed: int = 0) -> (
+            List[int], List[int], List[int]):
         """
         Returns a reproducible set of sample indices from the entire dataset population following independent writer splitting
         :param validation_percentage: the percentage of the entire population size that should be used for validation
@@ -96,9 +74,6 @@ class DatasetSplitter:
     def split_images_into_training_validation_and_test_set(self):
         print("Splitting data into training, validation and test sets...")
 
-        # number_of_images = len(os.listdir(self.source_directory))
-        # training_sample_indices, validation_sample_indices, test_sample_indices = \
-            # self.get_random_training_validation_and_test_sample_indices(number_of_images)
         training_sample_indices, validation_sample_indices, test_sample_indices = \
             self.get_independent_training_validation_and_test_sample_indices()
 
@@ -129,7 +104,8 @@ if __name__ == "__main__":
         "--destination_directory",
         type=str,
         default="data/training_validation_test",
-        help="The directory, where the images should be split into the three directories 'train', 'test' and 'validation'")
+        help="The directory, where the images should be split into the three directories 'train', 'test' and "
+             "'validation'")
     parser.add_argument(
         "--independent_set",
         type=str,
