@@ -3,7 +3,6 @@ import muscima.io
 import glob
 from collections import Counter
 import argparse
-import pandas
 from tqdm import tqdm
 
 

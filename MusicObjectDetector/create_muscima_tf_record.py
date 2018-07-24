@@ -26,7 +26,6 @@ from __future__ import print_function
 
 import hashlib
 import io
-import logging
 import os
 
 from lxml import etree
@@ -71,8 +70,6 @@ def dict_to_tf_example(data,
       label_map_dict: A map from string label names to integers ids.
       ignore_difficult_instances: Whether to skip difficult instances in the
         dataset  (default: False).
-      image_subdirectory: String specifying subdirectory within the
-        PASCAL dataset directory holding the actual image data.
 
     Returns:
       example: The converted tf.Example.

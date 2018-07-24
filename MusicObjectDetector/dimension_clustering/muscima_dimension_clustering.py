@@ -1,18 +1,16 @@
-import os
 import random
 from glob import glob
 from typing import Tuple
 
 import cv2
+import matplotlib.pyplot as plt
 import numpy
 import pandas
-import matplotlib.pyplot as plt
-import seaborn
+import pandas as pd
 from PIL import Image
 from imblearn.over_sampling import SMOTE
 from pandas import DataFrame
 from tqdm import tqdm
-import pandas as pd
 
 
 def IOU(x, centroids):

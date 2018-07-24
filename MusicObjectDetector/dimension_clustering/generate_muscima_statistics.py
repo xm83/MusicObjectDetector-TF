@@ -1,12 +1,9 @@
 import os
 import re
 from glob import glob
-from typing import Tuple, List
 
-import numpy
 import pandas
 from PIL import Image
-from muscima.cropobject import CropObject
 from omrdatasettools.image_generators.MuscimaPlusPlusImageGenerator import MuscimaPlusPlusImageGenerator
 from tqdm import tqdm
 
