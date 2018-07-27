@@ -15,7 +15,13 @@ python object_detection/builders/model_builder_test.py
 echo "Generating data-record in Tensorflow-format"
 cd ../MusicObjectDetector
 
-# 1. Manually copy the normalized directory into the data folder
+# 1. Manually copy the normalized directory into the data folder. You should have the following afterwards:
+#    Music ObjectDetector
+#    |- data
+#    |  |- normalized
+#    |  |  |- deepscores
+#    |  |  |- mensural
+#    |  |  |- muscima
 
 # 2. Create the mappings
 python generate_mapping_for_normalized_dataset.py --normalized_dataset_dir ./data/normalized/deepscores --mapping_output_path ./data/normalized/deepscores/mapping.txt
