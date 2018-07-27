@@ -1,3 +1,4 @@
+import argparse
 import random
 from glob import glob
 from typing import Tuple
@@ -11,6 +12,7 @@ from PIL import Image
 from imblearn.over_sampling import SMOTE
 from pandas import DataFrame
 from tqdm import tqdm
+import seaborn
 
 
 def IOU(x, centroids):
@@ -120,31 +122,50 @@ def report(text):
         dimension_clustering_protocol.writelines(text + "\n")
 
 
-if __name__ == "__main__":
-
-    # Use this part for the full image
-    # annotation_dimensions = pandas.read_csv("data/bounding_box_dimensions_relative.csv")
-    # visualization_width, visualization_height = 3500, 1500
-
-    # Use this part for cropped images
-    annotation_dimensions = pandas.read_csv("bounding_box_dimensions_relative.csv")
-    all_images = glob("../data/cvcmuscima_staff_removal/CvcMuscima-Distortions/ideal/**/image/*.png", recursive=True)
-    sizes = []
-    for image_path in tqdm(all_images, desc="Collecting image sizes"):
-        image = Image.open(image_path)
-        sizes.append(image.size)
-    sizes_df = pandas.DataFrame(sizes, columns=["width", "height"])
-    visualization_width, visualization_height = sizes_df["width"].mean(), sizes_df["height"].mean()
-    print("Average image size: {0:.0f}x{1:.0f}px".format(visualization_width, visualization_height))
-    print("Minimum image size: {0:.0f}x{1:.0f}px".format(sizes_df["width"].min(), sizes_df["height"].min()))
-    print("Maximum image size: {0:.0f}x{1:.0f}px".format(sizes_df["width"].max(), sizes_df["height"].max()))
-
-    total_number_of_clusters_to_evaluate = 10
-
-    annotation_dimensions.plot.scatter(x='width', y='height', s=0.1, c='red')
+def load_annotation_dimensions(annotations_csv_path: str):
+    annotation_dimensions = pandas.read_csv(annotations_csv_path)
+    seaborn.lmplot(x="width", y="height", hue='class', scatter_kws={"s": 1}, data=annotation_dimensions, legend=False,
+                   markers='o', fit_reg=False, palette="Set2")
     plt.show()
+    # plt.savefig("mensural_standard.png")
+    return annotation_dimensions[['width', 'height']].as_matrix()
 
-    dims = annotation_dimensions[['width', 'height']].as_matrix()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--annotations_csv_path", type=str, default="bounding_box_dimensions_relative.csv",
+                        help="Path to the csv-file that holds the annotation dimensions. The csv file must contain a "
+                             "header and columns called 'width' and 'height'. It is recommended to use relative "
+                             "dimensions (width of an object / width of the entire image), unless all images have "
+                             "exactly the same size, to increase robustness.")
+    parser.add_argument("--visualization_width", type=int, default="0",
+                        help="Expected size of input images (only used for scaling output correctly)")
+    parser.add_argument("--visualization_height", type=int, default="0",
+                        help="Expected size of input images (only used for scaling output correctly)")
+    parser.add_argument("--maximum_number_of_clusters", type=int, default="5",
+                        help="Maximum number of clusters that should be evaluated. "
+                             "Will evaluate all integers between one and this number.")
+
+    flags, unparsed = parser.parse_known_args()
+    total_number_of_clusters_to_evaluate = flags.maximum_number_of_clusters
+    visualization_width, visualization_height = flags.visualization_width, flags.visualization_height
+
+    if visualization_width == 0 or visualization_height == 0:
+        # If not specified, load images from MUSCIMA++ dataset
+        all_images = glob("../data/cvcmuscima_staff_removal/CvcMuscima-Distortions/ideal/**/image/*.png",
+                          recursive=True)
+        sizes = []
+        for image_path in tqdm(all_images, desc="Collecting image sizes"):
+            image = Image.open(image_path)
+            sizes.append(image.size)
+        sizes_df = pandas.DataFrame(sizes, columns=["width", "height"])
+        visualization_width, visualization_height = sizes_df["width"].mean(), sizes_df["height"].mean()
+        print("Minimum image size: {0:.0f}x{1:.0f}px".format(sizes_df["width"].min(), sizes_df["height"].min()))
+        print("Maximum image size: {0:.0f}x{1:.0f}px".format(sizes_df["width"].max(), sizes_df["height"].max()))
+
+    print("Average image size: {0:.0f}x{1:.0f}px".format(visualization_width, visualization_height))
+
+    dims = load_annotation_dimensions(flags.annotations_csv_path)
 
     statistics = []
 
