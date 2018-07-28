@@ -13,8 +13,10 @@ $env:PYTHONPATH = "$($pathToGitRoot);$($pathToGitRoot)/research;$($pathToGitRoot
 ################################################################
 #$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering_rms"
 #$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering_rms_1200_proposals"
-$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering_rms_2000_proposals"
-
+#$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering_rms_2000_proposals"
+#$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_deepscores_1"
+#$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_mensural_1"
+$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_muscima_1"
 
 Start-Transcript -path "$($pathToTranscript)/TrainModel-$($configuration).txt" -append
 echo "Training with $($configuration) configuration"
