@@ -1,4 +1,6 @@
 import os
+from time import time
+
 import tensorflow as tf
 import argparse
 import numpy as np
@@ -6,6 +8,7 @@ import numpy as np
 from PIL import Image
 from tqdm import tqdm
 import pickle
+import pandas as pd
 
 import inference_over_image
 from object_detection.utils import ops as utils_ops, label_map_util, visualization_utils as vis_util
@@ -45,6 +48,9 @@ if __name__ == "__main__":
                         help='Path to the output directory, that will contain the results.')
     args = parser.parse_args()
 
+    # Uncomment the next line on Windows to run the evaluation on the CPU
+    # os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
     # Path to frozen detection graph. This is the actual model that is used for the object detection.
     path_to_frozen_inference_graph = args.inference_graph
     path_to_labels = args.label_map
@@ -52,12 +58,16 @@ if __name__ == "__main__":
     input_image_directory = args.input_directory
     output_directory = args.output_directory
 
+    start_time = time()
+
     # Read frozen graph
     detection_graph = inference_over_image.load_detection_graph(path_to_frozen_inference_graph)
     category_index = inference_over_image.load_category_index(path_to_labels, number_of_classes)
 
     input_files = os.listdir(input_image_directory)
     os.makedirs(output_directory, exist_ok=True)
+
+    detection_start_time = time()
 
     with detection_graph.as_default():
         with tf.Session() as sess:
@@ -74,9 +84,11 @@ if __name__ == "__main__":
                 if tensor_name in all_tensor_names:
                     tensor_dict[key] = tf.get_default_graph().get_tensor_by_name(tensor_name)
 
+            detections_list = []
             for input_file in tqdm(input_files, desc="Detecting objects"):
                 try:
                     image = Image.open(os.path.join(input_image_directory, input_file)).convert("RGB")
+                    image_width, image_height = image.size
                 except:
                     # print("Can not read {0} as image. Skipping file".format(input_file))
                     continue
@@ -105,3 +117,26 @@ if __name__ == "__main__":
                 output_pickle_file = os.path.join(output_directory, "{0}_detection.pickle".format(input_file_name))
                 with open(output_pickle_file, "wb") as pickle_file:
                     pickle.dump(output_dict, pickle_file)
+
+                boxes = output_dict['detection_boxes']
+                classes = output_dict['detection_classes']
+                scores = output_dict['detection_scores']
+
+                for i in range(len(boxes)):
+                    top, left, bottom, right = tuple(list(boxes[i]))
+                    class_name = category_index[classes[i]]['name']
+                    score = scores[i]
+                    top *= image_height
+                    left *= image_height
+                    bottom *= image_height
+                    right *= image_height
+                    detections_list.append(["images/" + input_file_name + extension, top, left, bottom, right, class_name])
+
+            detections = pd.DataFrame(data=detections_list,
+                                      columns=["path_to_image", "top", "left", "bottom", "right", "class_name"])
+            detections.to_csv(os.path.join(output_directory, "detections.csv"), index=False, float_format="%.2f")
+
+    end_time = time()
+
+    print("Total execution time: {0:.0f}s".format(end_time - start_time))
+    print("Execution time without initialization: {0:.0f}s".format(end_time - detection_start_time))
