@@ -127,13 +127,16 @@ if __name__ == "__main__":
                     class_name = category_index[classes[i]]['name']
                     score = scores[i]
                     top *= image_height
-                    left *= image_height
+                    left *= image_width
                     bottom *= image_height
-                    right *= image_height
-                    detections_list.append(["images/" + input_file_name + extension, top, left, bottom, right, class_name])
+                    right *= image_width
+                    if score >= 0.5:
+                        detections_list.append(
+                            ["images/" + input_file_name + extension, top, left, bottom, right, class_name, score])
 
             detections = pd.DataFrame(data=detections_list,
-                                      columns=["path_to_image", "top", "left", "bottom", "right", "class_name"])
+                                      columns=["path_to_image", "top", "left", "bottom", "right", "class_name",
+                                               "confidence"])
             detections.to_csv(os.path.join(output_directory, "detections.csv"), index=False, float_format="%.2f")
 
     end_time = time()
