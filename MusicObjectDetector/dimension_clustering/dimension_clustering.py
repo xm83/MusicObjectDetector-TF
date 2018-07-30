@@ -126,8 +126,8 @@ def load_annotation_dimensions(annotations_csv_path: str):
     annotation_dimensions = pandas.read_csv(annotations_csv_path)
     seaborn.lmplot(x="width", y="height", hue='class', scatter_kws={"s": 1}, data=annotation_dimensions, legend=False,
                    markers='o', fit_reg=False, palette="Set2")
-    plt.show()
-    # plt.savefig("mensural_standard.png")
+    # plt.show()
+    plt.savefig("object_size_distribution.png", dpi=300)
     return annotation_dimensions[['width', 'height']].as_matrix()
 
 
