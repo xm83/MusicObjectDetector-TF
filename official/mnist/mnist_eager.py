@@ -26,18 +26,22 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import argparse
 import os
-import sys
 import time
 
+# pylint: disable=g-bad-import-order
+from absl import app as absl_app
+from absl import flags
 import tensorflow as tf
-import tensorflow.contrib.eager as tfe
-import mnist
-import dataset
+# pylint: enable=g-bad-import-order
 
-FLAGS = None
+from official.mnist import dataset as mnist_dataset
+from official.mnist import mnist
+from official.utils.flags import core as flags_core
+from official.utils.misc import model_helpers
 
+
+tfe = tf.contrib.eager
 
 def loss(logits, labels):
   return tf.reduce_mean(
@@ -53,25 +57,24 @@ def compute_accuracy(logits, labels):
       tf.cast(tf.equal(predictions, labels), dtype=tf.float32)) / batch_size
 
 
-def train(model, optimizer, dataset, log_interval=None):
+def train(model, optimizer, dataset, step_counter, log_interval=None):
   """Trains model on `dataset` using `optimizer`."""
 
-  global_step = tf.train.get_or_create_global_step()
-
   start = time.time()
-  for (batch, (images, labels)) in enumerate(tfe.Iterator(dataset)):
-    with tf.contrib.summary.record_summaries_every_n_global_steps(10):
+  for (batch, (images, labels)) in enumerate(dataset):
+    with tf.contrib.summary.record_summaries_every_n_global_steps(
+        10, global_step=step_counter):
       # Record the operations used to compute the loss given the input,
       # so that the gradient of the loss with respect to the variables
       # can be computed.
-      with tfe.GradientTape() as tape:
+      with tf.GradientTape() as tape:
         logits = model(images, training=True)
         loss_value = loss(logits, labels)
         tf.contrib.summary.scalar('loss', loss_value)
         tf.contrib.summary.scalar('accuracy', compute_accuracy(logits, labels))
       grads = tape.gradient(loss_value, model.variables)
       optimizer.apply_gradients(
-          zip(grads, model.variables), global_step=global_step)
+          zip(grads, model.variables), global_step=step_counter)
       if log_interval and batch % log_interval == 0:
         rate = log_interval / (time.time() - start)
         print('Step #%d\tLoss: %.6f (%d steps/sec)' % (batch, loss_value, rate))
@@ -80,10 +83,10 @@ def train(model, optimizer, dataset, log_interval=None):
 
 def test(model, dataset):
   """Perform an evaluation of `model` on the examples from `dataset`."""
-  avg_loss = tfe.metrics.Mean('loss')
-  accuracy = tfe.metrics.Accuracy('accuracy')
+  avg_loss = tfe.metrics.Mean('loss', dtype=tf.float32)
+  accuracy = tfe.metrics.Accuracy('accuracy', dtype=tf.float32)
 
-  for (images, labels) in tfe.Iterator(dataset):
+  for (images, labels) in dataset:
     logits = model(images, training=False)
     avg_loss(loss(logits, labels))
     accuracy(
@@ -96,30 +99,42 @@ def test(model, dataset):
     tf.contrib.summary.scalar('accuracy', accuracy.result())
 
 
-def main(_):
-  tfe.enable_eager_execution()
+def run_mnist_eager(flags_obj):
+  """Run MNIST training and eval loop in eager mode.
 
+  Args:
+    flags_obj: An object containing parsed flag values.
+  """
+  tf.enable_eager_execution()
+  model_helpers.apply_clean(flags.FLAGS)
+
+  # Automatically determine device and data_format
   (device, data_format) = ('/gpu:0', 'channels_first')
-  if FLAGS.no_gpu or tfe.num_gpus() <= 0:
+  if flags_obj.no_gpu or not tf.test.is_gpu_available():
     (device, data_format) = ('/cpu:0', 'channels_last')
+  # If data_format is defined in FLAGS, overwrite automatically set value.
+  if flags_obj.data_format is not None:
+    data_format = flags_obj.data_format
   print('Using device %s, and data format %s.' % (device, data_format))
 
   # Load the datasets
-  train_ds = dataset.train(FLAGS.data_dir).shuffle(60000).batch(
-      FLAGS.batch_size)
-  test_ds = dataset.test(FLAGS.data_dir).batch(FLAGS.batch_size)
+  train_ds = mnist_dataset.train(flags_obj.data_dir).shuffle(60000).batch(
+      flags_obj.batch_size)
+  test_ds = mnist_dataset.test(flags_obj.data_dir).batch(
+      flags_obj.batch_size)
 
   # Create the model and optimizer
-  model = mnist.Model(data_format)
-  optimizer = tf.train.MomentumOptimizer(FLAGS.lr, FLAGS.momentum)
+  model = mnist.create_model(data_format)
+  optimizer = tf.train.MomentumOptimizer(flags_obj.lr, flags_obj.momentum)
 
-  if FLAGS.output_dir:
+  # Create file writers for writing TensorBoard summaries.
+  if flags_obj.output_dir:
     # Create directories to which summaries will be written
     # tensorboard --logdir=<output_dir>
     # can then be used to see the recorded summaries.
-    train_dir = os.path.join(FLAGS.output_dir, 'train')
-    test_dir = os.path.join(FLAGS.output_dir, 'eval')
-    tf.gfile.MakeDirs(FLAGS.output_dir)
+    train_dir = os.path.join(flags_obj.output_dir, 'train')
+    test_dir = os.path.join(flags_obj.output_dir, 'eval')
+    tf.gfile.MakeDirs(flags_obj.output_dir)
   else:
     train_dir = None
     test_dir = None
@@ -127,74 +142,68 @@ def main(_):
       train_dir, flush_millis=10000)
   test_summary_writer = tf.contrib.summary.create_file_writer(
       test_dir, flush_millis=10000, name='test')
-  checkpoint_prefix = os.path.join(FLAGS.checkpoint_dir, 'ckpt')
 
-  # Train and evaluate for 11 epochs.
+  # Create and restore checkpoint (if one exists on the path)
+  checkpoint_prefix = os.path.join(flags_obj.model_dir, 'ckpt')
+  step_counter = tf.train.get_or_create_global_step()
+  checkpoint = tf.train.Checkpoint(
+      model=model, optimizer=optimizer, step_counter=step_counter)
+  # Restore variables on creation if a checkpoint exists.
+  checkpoint.restore(tf.train.latest_checkpoint(flags_obj.model_dir))
+
+  # Train and evaluate for a set number of epochs.
   with tf.device(device):
-    for epoch in range(1, 11):
-      with tfe.restore_variables_on_create(
-          tf.train.latest_checkpoint(FLAGS.checkpoint_dir)):
-        global_step = tf.train.get_or_create_global_step()
-        start = time.time()
-        with summary_writer.as_default():
-          train(model, optimizer, train_ds, FLAGS.log_interval)
-        end = time.time()
-        print('\nTrain time for epoch #%d (global step %d): %f' %
-              (epoch, global_step.numpy(), end - start))
+    for _ in range(flags_obj.train_epochs):
+      start = time.time()
+      with summary_writer.as_default():
+        train(model, optimizer, train_ds, step_counter,
+              flags_obj.log_interval)
+      end = time.time()
+      print('\nTrain time for epoch #%d (%d total steps): %f' %
+            (checkpoint.save_counter.numpy() + 1,
+             step_counter.numpy(),
+             end - start))
       with test_summary_writer.as_default():
         test(model, test_ds)
-      all_variables = (model.variables + optimizer.variables() + [global_step])
-      tfe.Saver(all_variables).save(checkpoint_prefix, global_step=global_step)
+      checkpoint.save(checkpoint_prefix)
+
+
+def define_mnist_eager_flags():
+  """Defined flags and defaults for MNIST in eager mode."""
+  flags_core.define_base_eager()
+  flags_core.define_image()
+  flags.adopt_module_key_flags(flags_core)
+
+  flags.DEFINE_integer(
+      name='log_interval', short_name='li', default=10,
+      help=flags_core.help_wrap('batches between logging training status'))
+
+  flags.DEFINE_string(
+      name='output_dir', short_name='od', default=None,
+      help=flags_core.help_wrap('Directory to write TensorBoard summaries'))
+
+  flags.DEFINE_float(name='learning_rate', short_name='lr', default=0.01,
+                     help=flags_core.help_wrap('Learning rate.'))
+
+  flags.DEFINE_float(name='momentum', short_name='m', default=0.5,
+                     help=flags_core.help_wrap('SGD momentum.'))
+
+  flags.DEFINE_bool(name='no_gpu', short_name='nogpu', default=False,
+                    help=flags_core.help_wrap(
+                        'disables GPU usage even if a GPU is available'))
+
+  flags_core.set_defaults(
+      data_dir='/tmp/tensorflow/mnist/input_data',
+      model_dir='/tmp/tensorflow/mnist/checkpoints/',
+      batch_size=100,
+      train_epochs=10,
+  )
+
+
+def main(_):
+  run_mnist_eager(flags.FLAGS)
 
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser()
-  parser.add_argument(
-      '--data_dir',
-      type=str,
-      default='/tmp/tensorflow/mnist/input_data',
-      help='Directory for storing input data')
-  parser.add_argument(
-      '--batch_size',
-      type=int,
-      default=100,
-      metavar='N',
-      help='input batch size for training (default: 100)')
-  parser.add_argument(
-      '--log_interval',
-      type=int,
-      default=10,
-      metavar='N',
-      help='how many batches to wait before logging training status')
-  parser.add_argument(
-      '--output_dir',
-      type=str,
-      default=None,
-      metavar='N',
-      help='Directory to write TensorBoard summaries')
-  parser.add_argument(
-      '--checkpoint_dir',
-      type=str,
-      default='/tmp/tensorflow/mnist/checkpoints/',
-      metavar='N',
-      help='Directory to save checkpoints in (once per epoch)')
-  parser.add_argument(
-      '--lr',
-      type=float,
-      default=0.01,
-      metavar='LR',
-      help='learning rate (default: 0.01)')
-  parser.add_argument(
-      '--momentum',
-      type=float,
-      default=0.5,
-      metavar='M',
-      help='SGD momentum (default: 0.5)')
-  parser.add_argument(
-      '--no_gpu',
-      action='store_true',
-      default=False,
-      help='disables GPU usage even if a GPU is available')
-
-  FLAGS, unparsed = parser.parse_known_args()
-  tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
+  define_mnist_eager_flags()
+  absl_app.run(main=main)
