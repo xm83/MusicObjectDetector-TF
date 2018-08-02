@@ -1,0 +1,21 @@
+# Use conda install ... to install these
+matplotlib
+Pillow >= 4.2.1
+graphviz == 0.8 # for graphviz, installation via the system might be required, e.g. sudo apt-get install graphviz
+pytest
+protobuf == 3.4.0
+
+# Use pip install ... to install these
+tensorflow == 1.8.0
+# tensorflow-gpu == 1.8.0 # Alternatively if available to run vastly faster trainings. See https://github.com/philferriere/dlwin
+h5py
+scikit-learn
+scipy
+sympy
+muscima == 0.3.2
+numpy
+lxml
+pydot
+tqdm
+opencv-python
+omrdatasettools >= 0.11

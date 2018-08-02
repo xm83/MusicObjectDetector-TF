@@ -1,0 +1,10 @@
+*.zip
+.idea
+data
+*.record
+Protoc
+old_data
+Transcripts
+*.tar.gz
+/Transcript.txt
+/detection_output/
