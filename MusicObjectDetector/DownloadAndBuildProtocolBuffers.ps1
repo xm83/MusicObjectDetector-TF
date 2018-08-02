@@ -32,4 +32,7 @@ cd ..\research
 rm ..\MusicObjectDetector\Protoc -Recurse
 rm ..\MusicObjectDetector\protoc-3.4.0-win32.zip
 
+echo "Verifying correct installation..."
+python object_detection\builders\model_builder_test.py
+
 Stop-Transcript
