@@ -314,7 +314,7 @@ def draw_bounding_boxes_on_image_tensors(images,
                                          category_index,
                                          instance_masks=None,
                                          keypoints=None,
-                                         max_boxes_to_draw=20,
+                                         max_boxes_to_draw=1200,
                                          min_score_thresh=0.2,
                                          use_normalized_coordinates=True):
   """Draws bounding boxes, masks, and keypoints on batch of image tensors.
@@ -332,7 +332,7 @@ def draw_bounding_boxes_on_image_tensors(images,
       instance masks.
     keypoints: A 4D float32 tensor of shape [N, max_detection, num_keypoints, 2]
       with keypoints.
-    max_boxes_to_draw: Maximum number of boxes to draw on an image. Default 20.
+    max_boxes_to_draw: Maximum number of boxes to draw on an image. Default 1200.
     min_score_thresh: Minimum score threshold for visualization. Default 0.2.
     use_normalized_coordinates: Whether to assume boxes and kepoints are in
       normalized coordinates (as opposed to absolute coordiantes).
@@ -388,7 +388,7 @@ def draw_bounding_boxes_on_image_tensors(images,
 
 def draw_side_by_side_evaluation_image(eval_dict,
                                        category_index,
-                                       max_boxes_to_draw=20,
+                                       max_boxes_to_draw=1200,
                                        min_score_thresh=0.2,
                                        use_normalized_coordinates=True):
   """Creates a side-by-side image with detections and groundtruth.
@@ -548,7 +548,7 @@ def visualize_boxes_and_labels_on_image_array(
     instance_boundaries=None,
     keypoints=None,
     use_normalized_coordinates=False,
-    max_boxes_to_draw=20,
+    max_boxes_to_draw=1200,
     min_score_thresh=.5,
     agnostic_mode=False,
     line_thickness=4,
