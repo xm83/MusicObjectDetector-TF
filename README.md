@@ -77,7 +77,21 @@ python create_muscima_tf_record.py --data_dir=data/training_validation_test_with
 # Running the training
 
 ## Adding source to Python path
-Make sure you have all required folders appended to the [Python path](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md#add-libraries-to-pythonpath)
+There are two ways of making sure, that the python script discoveres the correct binaries:
+
+### Permanently linking the source code as pip package
+To permanently link the source-code of the project, for Python to be able to find it, you can link the two packages by running:
+```bash
+# From tensorflow/models/research/
+pip install -e .
+cd slim
+# From inside tensorflow/models/research/slim
+pip install -e .
+```
+
+
+### Temporarily adding the source code before starting the training
+Make sure you have all required folders appended to the [Python path](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md#add-libraries-to-pythonpath). This can temporarily be done inside a shell, before calling any training scrips by the following commands:
 
 For Linux:
 ```bash
