@@ -105,7 +105,7 @@ FLAGS = flags.FLAGS
 
 
 def create_tf_example(example):
-  # TODO: Populate the following variables from your example.
+  # TODO(user): Populate the following variables from your example.
   height = None # Image height
   width = None # Image width
   filename = None # Filename of the image. Empty if image is not from file
@@ -141,7 +141,7 @@ def create_tf_example(example):
 def main(_):
   writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
 
-  # TODO: Write code to read in your dataset to examples variable
+  # TODO(user): Write code to read in your dataset to examples variable
 
   for example in examples:
     tf_example = create_tf_example(example)

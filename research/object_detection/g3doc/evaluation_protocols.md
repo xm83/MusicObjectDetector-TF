@@ -35,7 +35,7 @@ mAP value will be influenced by frequency of each class.
 Similar to Pascal VOC 2010 detection metric, but computes the intersection over
 union based on the object masks instead of object boxes.
 
-## Weighted PASCAL VOC detection metric
+## Weighted PASCAL VOC instance segmentation metric
 
 `EvalConfig.metrics_set='weighted_pascal_voc_instance_segmentation_metrics'`
 

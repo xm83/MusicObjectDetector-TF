@@ -63,6 +63,9 @@ message InputReader {
   optional uint32 min_after_dequeue = 4 [default=1000, deprecated=true];
 
 
+  // Number of records to read from each reader at once.
+  optional uint32 read_block_length = 15 [default=32];
+
   // Number of decoded records to prefetch before batching.
   optional uint32 prefetch_size = 13 [default = 512, deprecated=true];
 

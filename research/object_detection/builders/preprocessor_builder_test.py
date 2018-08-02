@@ -532,8 +532,6 @@ class PreprocessorBuilderTest(tf.test.TestCase):
         max_area: 1.0
         overlap_thresh: 0.0
         random_coef: 0.375
-        min_padded_size_ratio: [1.0, 1.0]
-        max_padded_size_ratio: [2.0, 2.0]
       }
       operations {
         min_object_covered: 0.25
@@ -543,10 +541,10 @@ class PreprocessorBuilderTest(tf.test.TestCase):
         max_area: 1.0
         overlap_thresh: 0.25
         random_coef: 0.375
-        min_padded_size_ratio: [1.0, 1.0]
-        max_padded_size_ratio: [2.0, 2.0]
       }
       aspect_ratio: 0.875
+      min_padded_size_ratio: [1.0, 1.0]
+      max_padded_size_ratio: [2.0, 2.0]
     }
     """
     preprocessor_proto = preprocessor_pb2.PreprocessingStep()
@@ -560,8 +558,20 @@ class PreprocessorBuilderTest(tf.test.TestCase):
                             'area_range': [(0.5, 1.0), (0.5, 1.0)],
                             'overlap_thresh': [0.0, 0.25],
                             'random_coef': [0.375, 0.375],
-                            'min_padded_size_ratio': [(1.0, 1.0), (1.0, 1.0)],
-                            'max_padded_size_ratio': [(2.0, 2.0), (2.0, 2.0)]})
+                            'min_padded_size_ratio': (1.0, 1.0),
+                            'max_padded_size_ratio': (2.0, 2.0)})
+
+  def test_build_normalize_image_convert_class_logits_to_softmax(self):
+    preprocessor_text_proto = """
+    convert_class_logits_to_softmax {
+        temperature: 2
+    }
+    """
+    preprocessor_proto = preprocessor_pb2.PreprocessingStep()
+    text_format.Merge(preprocessor_text_proto, preprocessor_proto)
+    function, args = preprocessor_builder.build(preprocessor_proto)
+    self.assertEqual(function, preprocessor.convert_class_logits_to_softmax)
+    self.assertEqual(args, {'temperature': 2})
 
 
 if __name__ == '__main__':
