@@ -1,4 +1,4 @@
-$pathToSourceRoot = "C:\Users\Alex\Repositories\MusicObjectDetector-TF\MusicObjectDetector\"
+$pathToSourceRoot = "C:\Users\Alex\Repositories\MusicObjectDetector-TF2\MusicObjectDetector\"
 $pathToTranscript = "$($pathToSourceRoot)"
 
 cd $pathToSourceRoot
