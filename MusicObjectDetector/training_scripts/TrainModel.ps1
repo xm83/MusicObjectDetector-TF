@@ -5,8 +5,8 @@ $pathToData = "$($pathToSourceRoot)/data"
 #$pathToData = "\\MONSTI\MusicObjectDetector-TF_Results"
 cd $pathToGitRoot
 
-echo "Appending required paths to temporary PYTHONPATH"
-$env:PYTHONPATH = "$($pathToGitRoot);$($pathToGitRoot)/research;$($pathToGitRoot)/research/slim;$($pathToSourceRoot)"
+#echo "Appending required paths to temporary PYTHONPATH"
+#$env:PYTHONPATH = "$($pathToGitRoot);$($pathToGitRoot)/research;$($pathToGitRoot)/research/slim;$($pathToSourceRoot)"
 
 ################################################################
 # Available configurations - uncomment the one to actually run #
@@ -16,9 +16,18 @@ $env:PYTHONPATH = "$($pathToGitRoot);$($pathToGitRoot)/research;$($pathToGitRoot
 #$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering_rms_2000_proposals"
 #$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_deepscores_1"
 #$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_mensural_1"
-$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_muscima_1"
+#$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_muscima_1"
+#$configuration = "faster_rcnn_inc_resnet_v2_muscima_1"
+$configuration = "ssd_resnet50_retinanet_muscima_1"
 
-Start-Transcript -path "$($pathToTranscript)/TrainModel-$($configuration).txt" -append
 echo "Training with $($configuration) configuration"
-python research/object_detection/train.py --logtostderr --pipeline_config_path="$($pathToSourceRoot)/configurations/$($configuration).config" --train_dir="$($pathToData)/checkpoints-$($configuration)-train"
+
+# Legacy slim-based
+Start-Transcript -path "$($pathToTranscript)/Train-$($configuration).txt" -append
+python research/object_detection/legacy/train.py --pipeline_config_path="$($pathToSourceRoot)/configurations/$($configuration).config" --train_dir="$($pathToData)/checkpoints-$($configuration)-train"
 Stop-Transcript
+
+# # Estimator-based
+# Start-Transcript -path "$($pathToTranscript)/TrainEval-$($configuration).txt" -append
+# python research/object_detection/model_main.py --alsologtostderr --pipeline_config_path="$($pathToSourceRoot)/configurations/$($configuration).config" --model_dir="$($pathToData)/$($configuration)"
+# Stop-Transcript
