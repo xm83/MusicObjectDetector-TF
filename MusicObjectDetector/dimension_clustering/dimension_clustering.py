@@ -124,10 +124,26 @@ def report(text):
 
 def load_annotation_dimensions(annotations_csv_path: str):
     annotation_dimensions = pandas.read_csv(annotations_csv_path)
-    seaborn.lmplot(x="width", y="height", hue='class', scatter_kws={"s": 1}, data=annotation_dimensions, legend=False,
-                   markers='o', fit_reg=False, palette="Set2")
-    # plt.show()
-    plt.savefig("object_size_distribution.png", dpi=300)
+    seaborn.set_context("poster")
+
+    plt.figure(figsize=(5,5))
+    g = seaborn.lmplot(x="width", y="height", hue='class', scatter_kws={"s": 2}, data=annotation_dimensions,
+                       legend=False,
+                       markers='o', fit_reg=False, palette="Set2")
+    g = g.set(xlim=(0, 0.06), ylim=(0, 0.119))
+    plt.show()
+    # plt.savefig("object_size_distribution.png", dpi=100)
+
+    plt.clf()
+
+    plt.figure(figsize=(5,5))
+    g = seaborn.kdeplot(annotation_dimensions["width"], annotation_dimensions["height"], legend=True,
+                        clip=((0, 0.06), (0, 0.119)), n_levels=40, cbar=False,
+                        shade_lowest=False, cmap="Reds", shade=True)
+    plt.show()
+    # plt.savefig("object_size_distribution_density.png", dpi=100)
+
+
     return annotation_dimensions[['width', 'height']].as_matrix()
 
 
@@ -166,7 +182,7 @@ if __name__ == "__main__":
     print("Average image size: {0:.0f}x{1:.0f}px".format(visualization_width, visualization_height))
 
     dims = load_annotation_dimensions(flags.annotations_csv_path)
-
+    exit(0)
     statistics = []
 
     for num_clusters in tqdm(range(1, total_number_of_clusters_to_evaluate + 1), desc="Computing clusters"):
