@@ -89,6 +89,7 @@ class BaseTest(tf.test.TestCase):
             'batch_size': _BATCH_SIZE,
             'resnet_version': resnet_version,
             'loss_scale': 128 if dtype == tf.float16 else 1,
+            'fine_tune': False,
         })
 
     predictions = spec.predictions
@@ -163,13 +164,6 @@ class BaseTest(tf.test.TestCase):
         main=cifar10_main.run_cifar, tmp_root=self.get_temp_dir(),
         extra_flags=['-resnet_version', '2']
     )
-
-  def test_flag_restriction(self):
-    with self.assertRaises(SystemExit):
-      integration.run_synthetic(
-          main=cifar10_main.run_cifar, tmp_root=self.get_temp_dir(),
-          extra_flags=['-resnet_version', '1', "-dtype", "fp16"]
-      )
 
 
 if __name__ == '__main__':
