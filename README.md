@@ -6,9 +6,7 @@ This is the repository for the fast and reliable Music Symbol detector with Deep
 
 If you want to try out the full-page detection on your own images, you can try it online in the [DIVAServices Spotlight](http://divaservices.unifr.ch/spotlight).
 
-The scientific reasoning behind this repository can be found in [this scientific article](https://alexanderpacha.files.wordpress.com/2018/05/handwritten-music-object-detection.pdf).
-
-The detailed results for various combinations of object-detector, feature-extractor, etc. can be found in [this spreadsheet](https://docs.google.com/spreadsheets/d/174-CnLO-rAoVMst0ngVGHguTlD39ebdxLX9ZLE9Pscw/edit?usp=sharing).
+The scientific reasoning can be found in [this scientific article](http://www.mdpi.com/2076-3417/8/9/1488). The detailed results for various combinations of object-detector, feature-extractor, etc. can be found in [this spreadsheet](https://docs.google.com/spreadsheets/d/14i3Y64YgcdA1eMQ8-SkGvwhCYLKvhhZ4B7DqTjMFpkg).
 
 ## Music object detection in image crops
 
@@ -17,6 +15,9 @@ If you are interested in previous work, presented at the [DAS 2018](https://das2
 | Original Image | Detection results as training progresses |
 |:--------------:|:------------------:|
 | ![Original image](MusicObjectDetector/images/crop_undetected.png) | ![Image with detected objects](MusicObjectDetector/images/individualImage1-animation.gif) |
+
+The scientific reasoning can be found in [this scientific article](https://alexanderpacha.files.wordpress.com/2018/05/handwritten-music-object-detection.pdf).
+The detailed results for various combinations of object-detector, feature-extractor, etc. can be found in [this spreadsheet](https://docs.google.com/spreadsheets/d/174-CnLO-rAoVMst0ngVGHguTlD39ebdxLX9ZLE9Pscw).
 
 # Preparing the application
 This repository contains several scripts that can be used independently of each other. 
