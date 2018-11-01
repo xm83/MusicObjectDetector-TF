@@ -11,9 +11,9 @@ cd $pathToGitRoot
 ################################################################
 # Available configurations - uncomment the one to actually run #
 ################################################################
-#$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering_rms"
-#$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering_rms_1200_proposals"
-#$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering_rms_2000_proposals"
+#$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_muscima_dimension_clustering_rms"
+#$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_muscima_dimension_clustering_rms_1200_proposals"
+#$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_muscima_dimension_clustering_rms_2000_proposals"
 #$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_deepscores_1"
 #$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_deepscores_2"
 #$configuration = "faster_rcnn_inception_resnet_v2_atrous_pretrained_mensural_1"
@@ -30,7 +30,19 @@ cd $pathToGitRoot
 #$configuration = "ssd_resnet50_retinanet_muscima_6"
 #$configuration = "ssd_resnet50_retinanet_muscima_7"
 #$configuration = "ssd_inception_v2_focal_loss_muscima_1"
-$configuration = "ssd_inception_v2_focal_loss_muscima_2"
+#$configuration = "ssd_inception_v2_focal_loss_muscima_2"
+#$configuration = "ssdlite_mobilenet_v2_muscima_1"
+#$configuration = "ssdlite_mobilenet_v2_muscima_2"
+#$configuration = "ssdlite_mobilenet_v2_muscima_3"
+#$configuration = "faster_rcnn_inception_v2_pretrained_muscima_1"
+#$configuration = "faster_rcnn_inception_v2_pretrained_muscima_2"
+#$configuration = "faster_rcnn_inception_v2_pretrained_muscima_3"
+#$configuration = "faster_rcnn_inception_v2_pretrained_muscima_3_no_mirror"
+#$configuration = "faster_rcnn_inception_v2_pretrained_muscima_4"
+#$configuration = "faster_rcnn_inception_v2_pretrained_muscima_5"
+#$configuration = "faster_rcnn_inception_v2_pretrained_muscima_6"
+#$configuration = "faster_rcnn_inception_v2_pretrained_muscima_7"
+#$configuration = "faster_rcnn_inception_v2_muscima_1"
 
 echo "Training with $($configuration) configuration"
 
