@@ -25,7 +25,6 @@ from object_detection.utils import shape_utils
 
 def multiclass_non_max_suppression(boxes,
                                    scores,
-                                   score_thresh,
                                    iou_thresh,
                                    max_size_per_class,
                                    max_total_size=0,
@@ -56,7 +55,6 @@ def multiclass_non_max_suppression(boxes,
       per class.
     scores: A [k, num_classes] float32 tensor containing the scores for each of
       the k detections.
-    score_thresh: scalar threshold for score (low scoring boxes are removed).
     iou_thresh: scalar threshold for IOU (new boxes that have high IOU overlap
       with previously selected boxes are removed).
     max_size_per_class: maximum number of retained boxes per class.
@@ -147,7 +145,7 @@ def multiclass_non_max_suppression(boxes,
           boxlist_and_class_scores.get_field(fields.BoxListFields.scores),
           max_selection_size,
           iou_threshold=iou_thresh,
-          score_threshold=score_thresh)
+      )
       nms_result = box_list_ops.gather(boxlist_and_class_scores,
                                        selected_indices)
       nms_result.add_field(
@@ -172,7 +170,6 @@ def multiclass_non_max_suppression(boxes,
 
 def batch_multiclass_non_max_suppression(boxes,
                                          scores,
-                                         score_thresh,
                                          iou_thresh,
                                          max_size_per_class,
                                          max_total_size=0,
@@ -196,7 +193,6 @@ def batch_multiclass_non_max_suppression(boxes,
         are used.
     scores: A [batch_size, num_anchors, num_classes] float32 tensor containing
       the scores for each of the `num_anchors` detections.
-    score_thresh: scalar threshold for score (low scoring boxes are removed).
     iou_thresh: scalar threshold for IOU (new boxes that have high IOU overlap
       with previously selected boxes are removed).
     max_size_per_class: maximum number of retained boxes per class.
@@ -365,17 +361,15 @@ def batch_multiclass_non_max_suppression(boxes,
                        tf.stack([per_image_num_valid_boxes] +
                                 (additional_field_dim - 1) * [-1])),
               [-1] + [dim.value for dim in additional_field_shape[1:]])
-      nmsed_boxlist = multiclass_non_max_suppression(
-          per_image_boxes,
-          per_image_scores,
-          score_thresh,
-          iou_thresh,
-          max_size_per_class,
-          max_total_size,
-          clip_window=per_image_clip_window,
-          change_coordinate_frame=change_coordinate_frame,
-          masks=per_image_masks,
-          additional_fields=per_image_additional_fields)
+      nmsed_boxlist = multiclass_non_max_suppression(per_image_boxes,
+                                                     per_image_scores,
+                                                     iou_thresh,
+                                                     max_size_per_class,
+                                                     max_total_size,
+                                                     clip_window=per_image_clip_window,
+                                                     change_coordinate_frame=change_coordinate_frame,
+                                                     masks=per_image_masks,
+                                                     additional_fields=per_image_additional_fields)
       padded_boxlist = box_list_ops.pad_or_clip_box_list(nmsed_boxlist,
                                                          max_total_size)
       num_detections = nmsed_boxlist.num_boxes()
