@@ -25,12 +25,12 @@ Before running them, make sure that you have the necessary requirements installe
 
 ## Install required libraries
 
-- Python 3.6
-- Tensorflow 1.8.0 (or optionally tensorflow-gpu 1.8.0)
+- Python 3.7
+- Tensorflow 1.13.1 (or optionally tensorflow-gpu 1.13.1)
 - pycocotools (more [infos](https://github.com/matterport/Mask_RCNN/issues/6#issuecomment-341503509))
     - On Linux, run `pip install git+https://github.com/waleedka/cocoapi.git#egg=pycocotools&subdirectory=PythonAPI`
     - On Windows, run `pip install git+https://github.com/philferriere/cocoapi.git#egg=pycocotools^&subdirectory=PythonAPI`
-- Some libraries, as specified in [requirements.txt](MusicObjectDetector/requirements.txt)
+- Some additional libraries, as specified in [requirements.txt](MusicObjectDetector/requirements.txt)
 
 ## Build Protobuf files on Linux
 

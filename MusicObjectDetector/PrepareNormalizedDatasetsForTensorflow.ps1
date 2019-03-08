@@ -1,8 +1,8 @@
-$pathToGitRoot = "C:/Users/Alex/Repositories/MusicObjectDetector-TF/"
-$pathToSourceRoot = "C:/Users/Alex/Repositories/MusicObjectDetector-TF/MusicObjectDetector/"
+$pathToGitRoot = "C:/Users/Alex/Repositories/MusicObjectDetector-TF"
+$pathToSourceRoot = "$($pathToGitRoot)/MusicObjectDetector"
 $pathToTranscript = "$($pathToSourceRoot)"
 
-Start-Transcript -path "$($pathToTranscript)PreparationTranscript.txt" -append
+Start-Transcript -path "$($pathToTranscript)/PreparationTranscript.txt" -append
 
 cd $pathToSourceRoot
 echo "Appending required paths to temporary PYTHONPATH"

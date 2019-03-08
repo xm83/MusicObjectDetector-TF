@@ -6,16 +6,16 @@ pytest
 protobuf == 3.4.0
 
 # Use pip install ... to install these
-tensorflow == 1.8.0
-# tensorflow-gpu == 1.8.0 # Alternatively if available to run vastly faster trainings. See https://github.com/philferriere/dlwin
+tensorflow == 1.13.1
+# tensorflow-gpu == 1.13.1 # Alternatively if available to run vastly faster trainings. See https://github.com/philferriere/dlwin
 h5py
 scikit-learn
 scipy
 sympy
-muscima == 0.3.2
+muscima >= 0.10.0
 numpy
 lxml
 pydot
 tqdm
 opencv-python
-omrdatasettools >= 0.11
+omrdatasettools >= 0.15
