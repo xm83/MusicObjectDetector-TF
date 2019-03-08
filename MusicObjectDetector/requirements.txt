@@ -1,7 +1,7 @@
 # Use conda install ... to install these
 matplotlib
 Pillow >= 4.2.1
-graphviz == 0.8 # for graphviz, installation via the system might be required, e.g. sudo apt-get install graphviz
+graphviz # for graphviz, installation via the system might be required, e.g. sudo apt-get install graphviz
 pytest
 protobuf == 3.4.0
 
@@ -10,10 +10,11 @@ tensorflow == 1.13.1
 # tensorflow-gpu == 1.13.1 # Alternatively if available to run vastly faster trainings. See https://github.com/philferriere/dlwin
 h5py
 scikit-learn
-scipy
+scikit-image >= 0.14.2
+scipy >= 1.2.1
 sympy
 muscima >= 0.10.0
-numpy
+numpy >= 1.16.2
 lxml
 pydot
 tqdm
