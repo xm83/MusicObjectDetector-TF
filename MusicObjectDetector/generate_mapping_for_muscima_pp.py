@@ -63,8 +63,9 @@ if __name__ == "__main__":
     filtered_class_id.sort()
     with open(args.mapping_output_path, "w") as f:
         for i, classname in enumerate(filtered_class_id):
-            f.write("""item{{
-    id: {0}
-    name: '{1}'
+            f.write("""item {{
+  id: {0}
+  name: '{1}'
 }}
+
 """.format(i + 1, classname))
