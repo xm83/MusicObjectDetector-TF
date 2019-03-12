@@ -15,7 +15,10 @@ python object_detection/builders/model_builder_test.py
 echo "Generating data-record in Tensorflow-format"
 cd ../MusicObjectDetector
 
-# 1. Manually copy the normalized directory into the data folder. You should have the following afterwards:
+
+# 1. Create the normalized datasets with the scripts from https://github.com/apacha/MusicObjectDetection
+
+# 2. Manually copy the normalized directory into the data folder. You should have the following afterwards:
 #    Music ObjectDetector
 #    |- data
 #    |  |- normalized
