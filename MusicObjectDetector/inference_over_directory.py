@@ -42,6 +42,8 @@ if __name__ == "__main__":
                         help='Path to the directory that contains the images for which object detection should be performed')
     parser.add_argument('--output_directory', dest='output_directory', type=str, default='detection_output',
                         help='Path to the output directory, that will contain the results.')
+    parser.add_argument('--show_scores', dest='show_scores', type=bool, default=True)
+    parser.add_argument('--show_labels', dest='show_labels', type=bool, default=True)
     args = parser.parse_args()
 
     # Uncomment the next line on Windows to run the evaluation on the CPU
@@ -53,6 +55,8 @@ if __name__ == "__main__":
     number_of_classes = 999999
     input_image_directory = args.input_directory
     output_directory = args.output_directory
+    show_scores = args.show_scores
+    show_labels = args.show_labels
 
     start_time = time()
 
@@ -82,6 +86,7 @@ if __name__ == "__main__":
 
             detections_list = []
             for input_file in tqdm(input_files, desc="Detecting objects"):
+                per_file_detections_list = []
                 try:
                     image = Image.open(os.path.join(input_image_directory, input_file)).convert("RGB")
                     image_width, image_height = image.size
@@ -104,15 +109,13 @@ if __name__ == "__main__":
                     category_index,
                     instance_masks=output_dict.get('detection_masks'),
                     use_normalized_coordinates=True,
-                    line_thickness=2)
+                    line_thickness=4,
+                    skip_scores=not show_scores,
+                    skip_labels=not show_labels)
 
                 input_file_name, extension = os.path.splitext(os.path.basename(input_file))
                 output_file = os.path.join(output_directory, "{0}_detection{1}".format(input_file_name, extension))
                 Image.fromarray(image_np).save(output_file)
-
-                output_pickle_file = os.path.join(output_directory, "{0}_detection.pickle".format(input_file_name))
-                with open(output_pickle_file, "wb") as pickle_file:
-                    pickle.dump(output_dict, pickle_file)
 
                 boxes = output_dict['detection_boxes']
                 classes = output_dict['detection_classes']
@@ -128,14 +131,22 @@ if __name__ == "__main__":
                     right *= image_width
                     if score >= 0.5:
                         detections_list.append(
-                            ["images/" + input_file_name + extension, top, left, bottom, right, class_name, score])
+                            [input_file_name + extension, top, left, bottom, right, class_name, score])
+                        per_file_detections_list.append(
+                            [input_file_name + extension, top, left, bottom, right, class_name, score])
+
+                detections = pd.DataFrame(data=per_file_detections_list,
+                                          columns=["image_name", "top", "left", "bottom", "right", "class_name",
+                                                   "confidence"])
+                output_csv_file = os.path.join(output_directory, "{0}_detection.csv".format(input_file_name))
+                detections.to_csv(output_csv_file, index=False, float_format="%.2f")
 
             detections = pd.DataFrame(data=detections_list,
-                                      columns=["path_to_image", "top", "left", "bottom", "right", "class_name",
+                                      columns=["image_name", "top", "left", "bottom", "right", "class_name",
                                                "confidence"])
             detections.to_csv(os.path.join(output_directory, "detections.csv"), index=False, float_format="%.2f")
 
-    end_time = time()
+            end_time = time()
 
-    print("Total execution time: {0:.0f}s".format(end_time - start_time))
-    print("Execution time without initialization: {0:.0f}s".format(end_time - detection_start_time))
+            print("Total execution time: {0:.0f}s".format(end_time - start_time))
+            print("Execution time without initialization: {0:.0f}s".format(end_time - detection_start_time))
