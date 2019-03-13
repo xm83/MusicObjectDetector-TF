@@ -1,20 +1,16 @@
+import argparse
 import os
+import pickle
 from time import time
 
-import tensorflow as tf
-import argparse
 import numpy as np
-
+import pandas as pd
+import tensorflow as tf
 from PIL import Image
 from tqdm import tqdm
-import pickle
-import pandas as pd
 
 import inference_over_image
-from object_detection.utils import ops as utils_ops, label_map_util, visualization_utils as vis_util
-
-if tf.__version__ < '1.4.0':
-    raise ImportError('Please upgrade your tensorflow installation to v1.4.* or later!')
+from object_detection.utils import visualization_utils as vis_util
 
 
 def run_inference_for_single_image(image, sess, tensor_dict):
