@@ -52,15 +52,19 @@ Note, that you have to use [version 3.4.0](https://github.com/google/protobuf/re
 
 # Dataset
 
-> Run [`PrepareDatasetsForTensorflow.ps1`](MusicObjectDetector/PrepareDatasetsForTensorflow.ps1) to automate this step on Windows or manually prepare the datasets with the following steps (on Linux).
-
-Run the following scripts to reproduce the dataset locally:
+Run [`PrepareMuscimaFullPageDatasetForTensorflow.ps1`](MusicObjectDetector/PrepareMuscimaFullPageDatasetForTensorflow.ps1) or [`PrepareMuscimaStavewiseDatasetForTensorflow.ps1`](MusicObjectDetector/PrepareMuscimaStavewiseDatasetForTensorflow.ps1) to automate this step on Windows or manually prepare the datasets by running:
 
 ```
 # cd into MusicObjectDetector folder
 python download_muscima_dataset.py
-python prepare_muscima_annotations.py
-python dataset_splitter.py --source_directory=data/muscima_pp_cropped_images_with_stafflines --destination_directory=data/training_validation_test_with_stafflines
+
+# For full-page training:
+python prepare_muscima_stavewise_annotations.py
+# For stavewise training:
+python prepare_muscima_full_page_annotations.py
+
+# Split image directory according to predefined train/test split
+python dataset_splitter.py --source_directory=data/muscima_pp_cropped_images_with_stafflines --destination_directory=data/training_validation_test
 ```
   
 These scripts will download the datasets automatically, prepare the annotations and split the images into three reproducible parts for training, validation and test. 
@@ -68,9 +72,15 @@ These scripts will download the datasets automatically, prepare the annotations 
 Now you can create the Tensorflow Records that are required for actually running the training.
 
 ```
-python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=training --annotations_dir=Annotations --output_path=data/all_classes_with_staff_lines_writer_independent_split/training.record --label_map_path=mapping_all_classes.txt
-python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=validation --annotations_dir=Annotations --output_path=data/all_classes_with_staff_lines_writer_independent_split/validation.record --label_map_path=mapping_all_classes.txt
-python create_muscima_tf_record.py --data_dir=data/training_validation_test_with_stafflines --set=test --annotations_dir=Annotations --output_path=data/all_classes_with_staff_lines_writer_independent_split/test.record --label_map_path=mapping_all_classes.txt
+# Full-page
+python create_muscima_tf_record.py --data_dir=data/training_validation_test --set=training --annotations_dir=Full_Page_Annotations --output_path=data/all_classes_writer_independent_split/training.record --label_map_path=mapping_all_classes.txt
+python create_muscima_tf_record.py --data_dir=data/training_validation_test --set=validation --annotations_dir=Full_Page_Annotations --output_path=data/all_classes_writer_independent_split/validation.record --label_map_path=mapping_all_classes.txt
+python create_muscima_tf_record.py --data_dir=data/training_validation_test --set=test --annotations_dir=Full_Page_Annotations --output_path=data/all_classes_writer_independent_split/test.record --label_map_path=mapping_all_classes.txt
+
+# Stavewise
+python create_muscima_tf_record.py --data_dir=data/training_validation_test --set=training --annotations_dir=Stavewise_Annotations --output_path=data/stave_crop_writer_independent_split/training.record --label_map_path=mapping_all_classes.txt
+python create_muscima_tf_record.py --data_dir=data/training_validation_test --set=validation --annotations_dir=Stavewise_Annotations --output_path=data/stave_crop_writer_independent_split/validation.record --label_map_path=mapping_all_classes.txt
+python create_muscima_tf_record.py --data_dir=data/training_validation_test --set=test --annotations_dir=Stavewise_Annotations --output_path=data/stave_crop_writer_independent_split/test.record --label_map_path=mapping_all_classes.txt
 ```
 
  By providing a different mapping, you can reduce the classes, you want to be able to detect, e.g. `mapping_71_classes.txt`:
@@ -200,7 +210,7 @@ python inference_over_directory.py \
 
 Published under MIT License,
 
-Copyright (c) 2018 [Alexander Pacha](http://alexanderpacha.com), [TU Wien](https://www.ims.tuwien.ac.at/people/alexander-pacha) and Kwon-Young Choi
+Copyright (c) 2019 [Alexander Pacha](http://alexanderpacha.com), [TU Wien](https://www.ims.tuwien.ac.at/people/alexander-pacha) and Kwon-Young Choi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

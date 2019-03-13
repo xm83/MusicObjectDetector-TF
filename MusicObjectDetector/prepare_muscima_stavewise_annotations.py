@@ -104,7 +104,7 @@ def cut_images(muscima_pp_dataset_directory: str, output_path: str,
             "crops": crop_positions
         })
 
-    with open(os.path.join(output_path, "croppings.json"), "w") as file:
+    with open(os.path.join(output_path, "../croppings.json"), "w") as file:
         json.dump(croppings, file)
     annotation_data = pandas.DataFrame(crop_annotations,
                                        columns=['filename', 'left', 'top', 'right', 'bottom', 'class'])

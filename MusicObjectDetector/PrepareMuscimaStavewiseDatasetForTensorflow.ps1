@@ -19,8 +19,8 @@ python download_muscima_dataset.py
 python prepare_muscima_stavewise_annotations.py
 python dataset_splitter.py --source_directory=data/muscima_pp_cropped_images_with_stafflines --destination_directory=data/training_validation_test
 
-python create_muscima_tf_record.py --data_dir=data/training_validation_test --set=training --annotations_dir=Annotations --output_path=data/stave_crop_writer_independent_split/training.record --label_map_path=mapping_all_classes.txt
-python create_muscima_tf_record.py --data_dir=data/training_validation_test --set=validation --annotations_dir=Annotations --output_path=data/stave_crop_writer_independent_split/validation.record --label_map_path=mapping_all_classes.txt
-python create_muscima_tf_record.py --data_dir=data/training_validation_test --set=test --annotations_dir=Annotations --output_path=data/stave_crop_writer_independent_split/test.record --label_map_path=mapping_all_classes.txt
+python create_muscima_tf_record.py --data_dir=data/training_validation_test --set=training --annotations_dir=Stavewise_Annotations --output_path=data/stave_crop_writer_independent_split/training.record --label_map_path=mapping_all_classes.txt
+python create_muscima_tf_record.py --data_dir=data/training_validation_test --set=validation --annotations_dir=Stavewise_Annotations --output_path=data/stave_crop_writer_independent_split/validation.record --label_map_path=mapping_all_classes.txt
+python create_muscima_tf_record.py --data_dir=data/training_validation_test --set=test --annotations_dir=Stavewise_Annotations --output_path=data/stave_crop_writer_independent_split/test.record --label_map_path=mapping_all_classes.txt
 
 Stop-Transcript
