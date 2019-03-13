@@ -4,14 +4,29 @@ from lxml import etree
 from typing import List, Tuple
 
 from lxml.etree import Element, SubElement
+from muscima.cropobject import CropObject
 
 
+def create_annotations_in_pascal_voc_format_from_crop_objects(annotations_folder: str,
+                                                              file_name: str,
+                                                              crop_objects_appearing_in_image: List[CropObject],
+                                                              image_width: int,
+                                                              image_height: int,
+                                                              image_depth: int):
+    objects_appearing_in_image = []
+    for detected_object in crop_objects_appearing_in_image:
+        class_name = detected_object.clsname
+        bounding_box = detected_object.bounding_box
+        objects_appearing_in_image.append(("", class_name, bounding_box))
+
+    create_annotations_in_pascal_voc_format(annotations_folder, file_name, objects_appearing_in_image,
+                                            image_width, image_height, image_depth)
 
 
 def create_annotations_in_pascal_voc_format(annotations_folder: str,
                                             file_name: str,
-                                            objects_appearing_in_cropped_image: List[
-                                                Tuple[str, str, Tuple[int, int, int, int]]],
+                                            objects_appearing_in_image: List[
+                                                            Tuple[str, str, Tuple[int, int, int, int]]],
                                             image_width: int,
                                             image_height: int,
                                             image_depth: int):
@@ -38,7 +53,8 @@ def create_annotations_in_pascal_voc_format(annotations_folder: str,
     depth.text = str(image_depth)
 
     # Write results to file
-    for detected_object in objects_appearing_in_cropped_image:
+    for detected_object in objects_appearing_in_image:
+        file_name = detected_object[0]
         class_name = detected_object[1]
         translated_bounding_box = detected_object[2]
         ymin, xmin, ymax, xmax = translated_bounding_box

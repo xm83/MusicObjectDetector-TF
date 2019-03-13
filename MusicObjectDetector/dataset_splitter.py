@@ -45,16 +45,15 @@ class DatasetSplitter:
         """
         random.seed(seed)
         test_set_names = np.genfromtxt(self.independent_set, dtype=str, delimiter="\n")
-        test_set_regex = re.compile(r".*W-(?P<writer>\d+)_N-(?P<page>\d+).*")
-        test_set_writer_page = [test_set_regex.match(x) for x in test_set_names]
+        image_name_regex = re.compile(r".*W-(?P<writer>\d+)_N-(?P<page>\d+).*")
+        test_set_writer_page = [image_name_regex.match(x) for x in test_set_names]
         test_set_writer_page = [[int(x.group("writer")), int(x.group("page"))]
                                 for x in test_set_writer_page]
         names = os.listdir(self.source_directory)
-        name_regex = re.compile(r".*w-(?P<writer>\d+).*p(?P<page>\d+).*.jpg")
         test_set_indices = []
         training_set_indices = []
         for i, name in enumerate(names):
-            name_result = name_regex.match(name)
+            name_result = image_name_regex.match(name)
             writer = int(name_result.group("writer"))
             page = int(name_result.group("page"))
             if [writer, page] in test_set_writer_page:
@@ -98,7 +97,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--source_directory",
         type=str,
-        default="data/muscima_pp_images",
+        default="data/muscima_pp/v1.0/data/images",
         help="The directory, where the images should be copied from")
     parser.add_argument(
         "--destination_directory",
@@ -109,7 +108,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--independent_set",
         type=str,
-        default="data/muscima_pp_raw/v1.0/specifications/testset-independent.txt",
+        default="data/muscima_pp/v1.0/specifications/testset-independent.txt",
         help="text file with independent writer set")
 
     flags, unparsed = parser.parse_known_args()

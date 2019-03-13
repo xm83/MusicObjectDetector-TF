@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_dir", default="data/muscima_pp_raw/v1.0/data/cropobjects_withstaff/")
+    parser.add_argument("--dataset_dir", default="data/muscima_pp/v1.0/data/cropobjects_withstaff/")
     parser.add_argument("--mapping_output_path", default="mapping_all_classes.txt")
     parser.add_argument("--remove_line_shaped_or_construct", type=bool, default=False)
     args = parser.parse_args()

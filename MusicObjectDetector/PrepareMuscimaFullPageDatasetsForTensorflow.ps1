@@ -16,8 +16,8 @@ echo "Generating data-record in Tensorflow-format"
 cd ../MusicObjectDetector
 
 python download_muscima_dataset.py
-python prepare_muscima_annotations.py
-python dataset_splitter.py --source_directory=data/muscima_pp_images --destination_directory=data/training_validation_test
+python prepare_muscima_full_page_annotations.py
+python dataset_splitter.py --source_directory=data/muscima_pp/v1.0/data/images --destination_directory=data/training_validation_test
 
 python create_muscima_tf_record.py --data_dir=data/training_validation_test --set=training --annotations_dir=Annotations --output_path=data/all_classes_writer_independent_split/training.record --label_map_path=mapping_all_classes.txt
 python create_muscima_tf_record.py --data_dir=data/training_validation_test --set=validation --annotations_dir=Annotations --output_path=data/all_classes_writer_independent_split/validation.record --label_map_path=mapping_all_classes.txt

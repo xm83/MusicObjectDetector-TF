@@ -1,8 +1,8 @@
+import json
 import os
-import re
 import shutil
 from glob import glob
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 
 import pandas
 from PIL import Image
@@ -13,42 +13,29 @@ from tqdm import tqdm
 from muscima_annotation_generator import create_annotations_in_pascal_voc_format
 
 
-def cut_images(muscima_image_directory: str, output_path: str, muscima_pp_raw_dataset_directory: str,
+def cut_images(muscima_pp_dataset_directory: str, output_path: str,
                exported_annotations_file_path: str, annotations_path: str):
-    image_paths = glob(muscima_image_directory)
+    muscima_image_directory = os.path.join(muscima_pp_dataset_directory, "v1.0", "data", "images", "*.png")
     os.makedirs(output_path, exist_ok=True)
-
-    image_generator = MuscimaPlusPlusImageGenerator()
-    raw_data_directory = os.path.join(muscima_pp_raw_dataset_directory, "v1.0", "data", "cropobjects_withstaff")
-    all_xml_files = [y for x in os.walk(raw_data_directory) for y in glob(os.path.join(x[0], '*.xml'))]
-
     if os.path.exists(exported_annotations_file_path):
         os.remove(exported_annotations_file_path)
-
     shutil.rmtree(annotations_path, ignore_errors=True)
 
-    crop_object_annotations: List[Tuple[str, str, List[CropObject]]] = []
-
-    for xml_file in tqdm(all_xml_files, desc='Parsing annotation files'):
-        crop_objects = image_generator.load_crop_objects_from_xml_file(xml_file)
-        doc = crop_objects[0].doc
-        result = re.match(r"CVC-MUSCIMA_W-(?P<writer>\d+)_N-(?P<page>\d+)_D-ideal", doc)
-        writer = result.group("writer")
-        page = result.group("page")
-        crop_object_annotations.append(('w-' + writer, 'p' + page.zfill(3), crop_objects))
-
+    annotations_dictionary = load_all_muscima_annotations(muscima_pp_dataset_directory)
     crop_annotations = []
+    croppings = []
+
+    image_paths = glob(muscima_image_directory)
     for image_path in tqdm(image_paths, desc="Cutting images"):
-        result = re.match(r".*(?P<writer>w-\d+).*(?P<page>p\d+).png", image_path)
-        writer = result.group("writer")
-        page = result.group("page")
+        image_name = os.path.basename(image_path)[:-4]  # cut away the extension .png
         image = Image.open(image_path, "r")  # type: Image.Image
         image_width = image.width
         image_height = image.height
         objects_appearing_in_image: List[CropObject] = None
-        for crop_object_annotation in crop_object_annotations:
-            if writer == crop_object_annotation[0] and page == crop_object_annotation[1]:
-                objects_appearing_in_image = crop_object_annotation[2]
+
+        for document, crop_objects in annotations_dictionary.items():
+            if image_name in document:
+                objects_appearing_in_image = crop_objects
                 break
 
         if objects_appearing_in_image is None:
@@ -68,19 +55,21 @@ def cut_images(muscima_image_directory: str, output_path: str, muscima_pp_raw_da
                           image_height)
 
         output_image_counter = 1
+        crop_positions = []
         for staff_index in range(len(staff_objects)):
             staff = staff_objects[staff_index]
             if staff_index < len(staff_objects) - 1:
                 y_bottom = staff_objects[staff_index + 1].top
             else:
                 y_bottom = last_bottom
-            y_top = next_y_top
+            top_offset = next_y_top
             next_y_top = staff.bottom
+            left_offset = 0
 
-            image_crop_bounding_box_left_top_bottom_right = (0, y_top, image_width, y_bottom)
-            image_crop_bounding_box_top_left_bottom_right = (y_top, 0, y_bottom, image_width)
+            image_crop_bounding_box_left_top_bottom_right = (left_offset, top_offset, image_width, y_bottom)
+            image_crop_bounding_box_top_left_bottom_right = (top_offset, left_offset, y_bottom, image_width)
 
-            file_name = "{0}_{1}_{2}.jpg".format(writer, page, output_image_counter)
+            file_name = "{0}_{1}.png".format(image_name, output_image_counter)
             output_image_counter += 1
 
             objects_appearing_in_cropped_image = \
@@ -102,10 +91,41 @@ def cut_images(muscima_image_directory: str, output_path: str, muscima_pp_raw_da
 
             output_file = os.path.join(output_path, file_name)
             cropped_image.save(output_file, "png")
+            crop_positions.append({
+                "file_name": file_name,
+                "width": cropped_image.width,
+                "height": cropped_image.height,
+                "left_offset": left_offset,
+                "top_offset": top_offset
+            })
 
+        croppings.append({
+            "image_path": image_path,
+            "crops": crop_positions
+        })
+
+    with open(os.path.join(output_path, "croppings.json"), "w") as file:
+        json.dump(croppings, file)
     annotation_data = pandas.DataFrame(crop_annotations,
                                        columns=['filename', 'left', 'top', 'right', 'bottom', 'class'])
     annotation_data.to_csv(exported_annotations_file_path, index=False)
+
+
+def load_all_muscima_annotations(muscima_pp_dataset_directory) -> Dict[str, List[CropObject]]:
+    """
+    :param muscima_pp_dataset_directory:
+    :return: Returns a dictionary of annotations with the filename as key
+    """
+    image_generator = MuscimaPlusPlusImageGenerator()
+    raw_data_directory = os.path.join(muscima_pp_dataset_directory, "v1.0", "data", "cropobjects_withstaff")
+    all_xml_files = [y for x in os.walk(raw_data_directory) for y in glob(os.path.join(x[0], '*.xml'))]
+
+    crop_object_annotations = {}
+    for xml_file in tqdm(all_xml_files, desc='Parsing annotation files'):
+        crop_objects = image_generator.load_crop_objects_from_xml_file(xml_file)
+        doc = crop_objects[0].doc
+        crop_object_annotations[doc] = crop_objects
+    return crop_object_annotations
 
 
 def intersection(ai, bi):
@@ -125,7 +145,8 @@ def area(a):
 
 def compute_objects_appearing_in_cropped_image(file_name: str,
                                                image_crop_bounding_box_top_left_bottom_right: Tuple[int, int, int, int],
-                                               all_music_objects_appearing_in_image: List[CropObject]) \
+                                               all_music_objects_appearing_in_image: List[CropObject],
+                                               intersection_over_area_threshold_for_inclusion=0.8) \
         -> List[Tuple[str, str, Tuple[int, int, int, int]]]:
     x_translation_for_cropped_image = image_crop_bounding_box_top_left_bottom_right[1]
     y_translation_for_cropped_image = image_crop_bounding_box_top_left_bottom_right[0]
@@ -136,9 +157,8 @@ def compute_objects_appearing_in_cropped_image(file_name: str,
             continue
 
         intersection_over_area = intersection(image_crop_bounding_box_top_left_bottom_right,
-                                              music_object.bounding_box) / area(
-            music_object.bounding_box)
-        if intersection_over_area > 0.8:
+                                              music_object.bounding_box) / area(music_object.bounding_box)
+        if intersection_over_area > intersection_over_area_threshold_for_inclusion:
             top, left, bottom, right = music_object.bounding_box
             img_top, img_left, img_bottom, img_right = image_crop_bounding_box_top_left_bottom_right
             img_width = img_right - img_left - 1
@@ -153,18 +173,20 @@ def compute_objects_appearing_in_cropped_image(file_name: str,
     return objects_appearing_in_cropped_image
 
 
-if __name__ == "__main__":
-    dataset_directory = "data"
-    muscima_pp_raw_dataset_directory = os.path.join(dataset_directory, "muscima_pp_raw")
-    muscima_image_directory = os.path.join(dataset_directory, "cvcmuscima_staff_removal")
-
-    cut_images("data/cvcmuscima_staff_removal/*/ideal/*/image/*.png",
-               "data/muscima_pp_cropped_images_with_stafflines",
-               muscima_pp_raw_dataset_directory,
-               "data/Annotations.csv",
-               "data/Annotations")
-
+def compute_statistics(annotations_csv):
     # Create statistics for how many instances of each class exist
-    annotations = pandas.read_csv("data/Annotations.csv")
+    annotations = pandas.read_csv(annotations_csv)
     classes = annotations[['class']].groupby('class').size().reset_index(name='counts')  # type: pandas.DataFrame
     classes.to_csv("data/Class-Statistics.csv", header=True, index=False)
+
+
+if __name__ == "__main__":
+    muscima_pp_dataset_directory = os.path.join("data", "muscima_pp")
+
+    annotations_csv = "data/Stavewise_Annotations.csv"
+    cut_images(muscima_pp_dataset_directory,
+               "data/muscima_pp_cropped_images_with_stafflines",
+               annotations_csv,
+               "data/Stavewise_Annotations")
+
+    compute_statistics(annotations_csv)
