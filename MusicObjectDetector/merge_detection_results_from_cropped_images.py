@@ -5,7 +5,6 @@ import pandas as pd
 from PIL import Image
 from PIL.ImageDraw import ImageDraw
 from tqdm import tqdm
-from joblib import Parallel, delayed
 
 from object_detection.utils.label_map_util import get_label_map_dict
 
@@ -138,7 +137,6 @@ if __name__ == "__main__":
 
     classes = get_label_map_dict(args.class_mapping)
 
-    # Parallel(n_jobs=16)(delayed(merge_results(image_crops)) for image_crops in image_crops_list)
     for image_crops in tqdm(image_crops_list, "Merging detection results"):
         merged_detection_results = merge_results(image_crops)
         draw_bounding_boxes(image_crops["image_path"], merged_detection_results)
