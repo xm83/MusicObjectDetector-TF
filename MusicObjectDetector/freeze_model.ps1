@@ -10,8 +10,8 @@ echo "Appending required paths to temporary PYTHONPATH"
 $env:PYTHONPATH = "$($pathToGitRoot);$($pathToGitRoot)/research;$($pathToGitRoot)/research/slim;$($pathToSourceRoot)"
 
 # Replace with your path to the checkpoint folder and the respective checkpoint number
-$pathToCheckpoint = "C:\Users\Alex\Repositories\MusicObjectDetector-TF\MusicObjectDetector\data\checkpoints-faster_rcnn_inception_resnet_v2_atrous_pretrained_dimension_clustering_rms_2000_proposals-train"
-$checkpointNumber = "141270"
+$pathToCheckpoint = "C:\Users\Alex\Repositories\MusicObjectDetector-TF\MusicObjectDetector\data\faster_rcnn_inception_resnet_v2_atrous_pretrained_muscima_3"
+$checkpointNumber = "80000"
 
 python research/object_detection/export_inference_graph.py `
     --input_type image_tensor `
