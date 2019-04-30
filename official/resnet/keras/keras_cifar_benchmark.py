@@ -21,6 +21,7 @@ from __future__ import print_function
 import os
 import time
 from absl import flags
+import tensorflow as tf # pylint: disable=g-bad-import-order
 
 from official.resnet import cifar10_main as cifar_main
 from official.resnet.keras import keras_benchmark
@@ -88,6 +89,19 @@ class Resnet56KerasAccuracy(keras_benchmark.KerasBenchmark):
     FLAGS.train_epochs = 182
     FLAGS.model_dir = self._get_model_dir('benchmark_2_gpu')
     FLAGS.dtype = 'fp32'
+    FLAGS.enable_eager = True
+    self._run_and_report_benchmark()
+
+  def benchmark_2_gpu_no_cloning(self):
+    """Test keras based model with eager, distributed no-cloning."""
+    self._setup()
+    FLAGS.num_gpus = 2
+    FLAGS.data_dir = self.data_dir
+    FLAGS.batch_size = 128
+    FLAGS.train_epochs = 182
+    FLAGS.model_dir = self._get_model_dir('benchmark_2_gpu_no_cloning')
+    FLAGS.dtype = 'fp32'
+    FLAGS.clone_model_in_keras_dist_strat = False
     FLAGS.enable_eager = True
     self._run_and_report_benchmark()
 
@@ -197,6 +211,16 @@ class Resnet56KerasBenchmarkBase(keras_benchmark.KerasBenchmark):
     FLAGS.batch_size = 128 * 2  # 2 GPUs
     self._run_and_report_benchmark()
 
+  def benchmark_2_gpu_no_cloning(self):
+    self._setup()
+    FLAGS.num_gpus = 2
+    FLAGS.enable_eager = True
+    FLAGS.distribution_strategy = 'default'
+    FLAGS.model_dir = self._get_model_dir('benchmark_2_gpu_no_cloning')
+    FLAGS.batch_size = 128 * 2  # 2 GPUs
+    FLAGS.clone_model_in_keras_dist_strat = False
+    self._run_and_report_benchmark()
+
   def benchmark_graph_2_gpu(self):
     self._setup()
     FLAGS.num_gpus = 2
@@ -233,3 +257,7 @@ class Resnet56KerasBenchmarkReal(Resnet56KerasBenchmarkBase):
 
     super(Resnet56KerasBenchmarkReal, self).__init__(
         output_dir=output_dir, default_flags=default_flags)
+
+
+if __name__ == '__main__':
+  tf.test.main()
