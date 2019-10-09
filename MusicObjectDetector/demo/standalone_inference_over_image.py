@@ -6,9 +6,6 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image, ImageColor
 
-if tf.__version__ < '1.4.0':
-    raise ImportError('Please upgrade your tensorflow installation to v1.4.* or later!')
-
 STANDARD_COLORS = [
     'AliceBlue', 'Chartreuse', 'Aqua', 'Aquamarine', 'Azure', 'Beige', 'Bisque',
     'BlanchedAlmond', 'BlueViolet', 'BurlyWood', 'CadetBlue', 'AntiqueWhite',
@@ -106,7 +103,7 @@ if __name__ == "__main__":
                              'including position-classification')
     args = parser.parse_args()
 
-    # Uncomment the next line on Windows to run the evaluation on the CPU
+    # The next line forces Tensorflow on Windows to run the computation on the CPU
     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
     # Build category map
