@@ -8,4 +8,3 @@ Transcripts
 *.tar.gz
 /Transcript.txt
 /detection_output/
-2018-07-30_faster-rcnn_inception-resnet-v2_full-page_muscima.pb
